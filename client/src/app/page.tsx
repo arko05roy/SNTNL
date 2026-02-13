@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAccount } from 'wagmi';
 import { getAgentManager } from '@/lib/agents';
 import { getAveragePrice } from '@/lib/providers';
 import { encryptBidAmount } from '@/lib/bite';
 import { processAuctionPayment, type X402PaymentResult } from '@/lib/x402';
-import type { Agent, Auction, Bid, ServiceType, AuctionHistory, AuctionReceipt } from '@/types';
+import type { Agent, Auction, Bid, ServiceType, ServiceProvider, AuctionHistory, AuctionReceipt } from '@/types';
 
 import { Header } from '@/components/Header';
 import { StatsBar } from '@/components/StatsBar';
@@ -32,6 +33,7 @@ async function callAuctionApi(body: Record<string, unknown>) {
 }
 
 export default function Home() {
+  const { address: buyerAddress, isConnected } = useAccount();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [auction, setAuction] = useState<Auction | null>(null);
   const [phase, setPhase] = useState<Phase>('setup');
@@ -62,7 +64,7 @@ export default function Home() {
     setBiteEpoch(epochId);
   }, []);
 
-  const startAuction = async (serviceType: ServiceType) => {
+  const startAuction = async (serviceType: ServiceType, provider: ServiceProvider) => {
     setLoading(true);
     setPaymentResult(null);
     setReceipt(null);
@@ -101,6 +103,7 @@ export default function Home() {
         bids: [],
         finalized: false,
         createTxHash,
+        provider,
       };
 
       setAuction(newAuction);
@@ -255,6 +258,12 @@ export default function Home() {
           auctionId: auction.id,
           onChainId: auction.onChainId,
           serviceType: auction.serviceType,
+          provider: auction.provider ? {
+            name: auction.provider.name,
+            address: auction.provider.address,
+            serviceType: auction.provider.serviceType,
+            basePrice: auction.provider.basePrice.toString(),
+          } : undefined,
           chainId: 324705682,
           network: 'SKALE Base Sepolia',
           blockExplorer: 'https://base-sepolia-testnet-explorer.skalenodes.com',
@@ -326,9 +335,11 @@ export default function Home() {
         {phase === 'setup' && (
           <AuctionSetup
             agentCount={agents.length}
+            agents={agents}
             loading={loading}
             onLaunch={startAuction}
-            history={history}
+            buyerAddress={buyerAddress}
+            isConnected={isConnected}
           />
         )}
 
@@ -351,11 +362,12 @@ export default function Home() {
 
         {phase === 'complete' && auction && (
           <div>
-            <AuctionResults auction={auction} agents={agents} />
+            <AuctionResults auction={auction} agents={agents} provider={auction.provider} />
             <PaymentSettlement
               paymentResult={paymentResult}
               winnerName={agents.find((a) => a.id === auction.winner)?.name}
               amount={auction.winningBid}
+              provider={auction.provider}
             />
             {receipt && <ReceiptDownload receipt={receipt} />}
             <button
@@ -364,6 +376,34 @@ export default function Home() {
             >
               Run Another Auction
             </button>
+          </div>
+        )}
+
+        {/* Always-visible history */}
+        {history.length > 0 && (
+          <div className="mt-10 max-w-2xl mx-auto">
+            <h3 className="text-sm uppercase tracking-wider text-gray-500 mb-3">Auction History</h3>
+            <div className="space-y-2">
+              {history.map((h, i) => {
+                const winnerAgent = agents.find(a => a.id === h.auction.winner);
+                return (
+                  <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg px-4 py-3 text-sm">
+                    <span className="text-gray-300">
+                      {h.auction.serviceType}
+                      {h.auction.provider && (
+                        <span className="text-gray-500 ml-1">&#8594; {h.auction.provider.name}</span>
+                      )}
+                    </span>
+                    <span className="text-gray-400">
+                      {winnerAgent?.name || h.auction.winner?.slice(0, 8)}
+                    </span>
+                    <span className="font-mono text-green-400">
+                      {h.auction.winningBid ? `${(Number(h.auction.winningBid) / 1000).toFixed(1)}k` : '-'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

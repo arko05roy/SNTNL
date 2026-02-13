@@ -37,6 +37,7 @@ export interface Auction {
   finalized: boolean;
   createTxHash?: string;    // on-chain create tx
   finalizeTxHash?: string;  // on-chain finalize tx
+  provider?: ServiceProvider;  // the provider being bid on
 }
 
 export interface AuctionHistory {
@@ -150,6 +151,12 @@ export interface AuctionReceipt {
     agentId: string;
     agentName: string;
     amount: string;
+  };
+  provider?: {
+    name: string;
+    address: string;
+    serviceType: string;
+    basePrice: string;
   };
   payment: {
     protocol: string;

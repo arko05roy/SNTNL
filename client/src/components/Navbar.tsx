@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Demo' },
+  { href: '/', label: 'Auctions' },
   { href: '/agents', label: 'My Agents' },
   { href: '/providers', label: 'Providers' },
 ];

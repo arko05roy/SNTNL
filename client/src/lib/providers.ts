@@ -50,6 +50,22 @@ export function getAveragePrice(serviceType: string, onChainProviders: ServicePr
   return total / BigInt(allProviders.length);
 }
 
+export async function getProvidersForAuction(serviceType: string): Promise<ServiceProvider[]> {
+  const seed = getProvidersByType(serviceType);
+  const onChain = await fetchOnChainProviders();
+  const onChainFiltered = onChain.filter(p => p.serviceType === serviceType);
+  // Deduplicate by address
+  const seen = new Set(seed.map(p => p.address));
+  const merged = [...seed];
+  for (const p of onChainFiltered) {
+    if (!seen.has(p.address)) {
+      merged.push(p);
+      seen.add(p.address);
+    }
+  }
+  return merged;
+}
+
 export async function fetchOnChainProviders(): Promise<ServiceProvider[]> {
   try {
     const res = await fetch('/api/providers', {

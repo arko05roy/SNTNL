@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import type { X402PaymentResult } from '@/lib/x402';
+import type { ServiceProvider } from '@/types';
 import { getExplorerTxUrl } from '@/lib/contracts';
 
 interface PaymentSettlementProps {
   paymentResult: X402PaymentResult | null;
   winnerName?: string;
   amount?: bigint;
+  provider?: ServiceProvider;
 }
 
-export function PaymentSettlement({ paymentResult, winnerName, amount }: PaymentSettlementProps) {
+export function PaymentSettlement({ paymentResult, winnerName, amount, provider }: PaymentSettlementProps) {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -67,6 +69,14 @@ export function PaymentSettlement({ paymentResult, winnerName, amount }: Payment
           {winnerName && amount && (
             <p className="text-sm text-gray-300">
               {winnerName} pays {(Number(amount) / 1000).toFixed(1)}k tokens
+              {provider && (
+                <span className="text-cyan-400"> &#8594; {provider.name}</span>
+              )}
+            </p>
+          )}
+          {provider && (
+            <p className="text-xs font-mono text-gray-500">
+              Recipient: {provider.address}
             </p>
           )}
           {paymentResult.transactionHash && (

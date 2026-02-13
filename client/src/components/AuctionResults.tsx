@@ -1,14 +1,15 @@
 'use client';
 
-import type { Agent, Auction } from '@/types';
+import type { Agent, Auction, ServiceProvider } from '@/types';
 import { getExplorerTxUrl } from '@/lib/contracts';
 
 interface AuctionResultsProps {
   auction: Auction;
   agents: Agent[];
+  provider?: ServiceProvider;
 }
 
-export function AuctionResults({ auction, agents }: AuctionResultsProps) {
+export function AuctionResults({ auction, agents, provider }: AuctionResultsProps) {
   const sortedBids = [...auction.bids].sort((a, b) => Number(b.amount - a.amount));
 
   return (
@@ -18,12 +19,23 @@ export function AuctionResults({ auction, agents }: AuctionResultsProps) {
           <h2 className="text-2xl font-bold">Auction Results</h2>
           <p className="text-gray-400 text-sm">{auction.serviceType}</p>
         </div>
-        {auction.onChainId !== undefined && (
-          <div className="text-right">
-            <div className="text-xs text-gray-500">On-Chain ID</div>
-            <div className="font-mono text-sm text-blue-400">#{auction.onChainId}</div>
-          </div>
-        )}
+        <div className="flex items-center gap-6">
+          {provider && (
+            <div className="text-right">
+              <div className="text-xs text-gray-500">Provider Secured</div>
+              <div className="text-sm font-medium text-cyan-400">{provider.name}</div>
+              <div className="text-xs text-gray-500 font-mono">
+                {provider.address.slice(0, 8)}...{provider.address.slice(-4)}
+              </div>
+            </div>
+          )}
+          {auction.onChainId !== undefined && (
+            <div className="text-right">
+              <div className="text-xs text-gray-500">On-Chain ID</div>
+              <div className="font-mono text-sm text-blue-400">#{auction.onChainId}</div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">
