@@ -138,7 +138,7 @@ function MatchRow({
                   ))}
                 </div>
                 <span className="font-mono text-[11px] text-amber-500/60">
-                  decrypting...
+                  BITE decrypting...
                 </span>
               </div>
             )}
@@ -208,7 +208,7 @@ export function ClearingAnimation({ matches, agents, onComplete }: ClearingAnima
           step === 'results' ? 'text-green-500' : 'text-amber-500'
         }`}>
           {step === 'matching' && 'MATCHING...'}
-          {step === 'revealing' && `DECRYPTING ${revealedIndex + 1}/${matches.length}`}
+          {step === 'revealing' && `BITE DECRYPT ${revealedIndex + 1}/${matches.length}`}
           {step === 'results' && 'COMPLETE'}
         </span>
       </div>
@@ -259,11 +259,13 @@ export function ClearingAnimation({ matches, agents, onComplete }: ClearingAnima
             <div className="flex items-center gap-4 font-mono text-[10px]">
               <span className="text-green-500">{matches.length} MATCHED</span>
               <div className="w-px h-3 bg-gray-800" />
-              <span className="text-cyan-500/70">
-                {(matches.reduce((s, m) => s + Number(m.winner.amount), 0) / 1000).toFixed(0)}k VOLUME
-              </span>
+              <span className="text-amber-500/70">BITE DECRYPTED</span>
               <div className="w-px h-3 bg-gray-800" />
-              <span className="text-gray-500">x402 SETTLED</span>
+              <span className="text-blue-400/70">AP2 AUTHORIZED</span>
+              <div className="w-px h-3 bg-gray-800" />
+              <span className="text-cyan-500/70">
+                {(matches.reduce((s, m) => s + Number(m.winner.amount), 0) / 1000).toFixed(0)}k x402 SETTLED
+              </span>
             </div>
           </div>
         )}

@@ -30,10 +30,10 @@ export function PaymentSettlement({ paymentResult, winnerName, amount, provider 
   }, [paymentResult]);
 
   const steps = [
-    { label: 'Initiating x402 payment...', active: step >= 1 },
-    { label: 'Signing authorization...', active: step >= 2 },
-    { label: 'Processing settlement...', active: step >= 3 },
-    { label: step < 4 ? 'Settling payment...' : paymentResult?.success ? 'Payment settled' : 'Payment failed', active: step >= 4 },
+    { label: 'AP2 PaymentMandate authorized', active: step >= 1 },
+    { label: 'Initiating x402 payment...', active: step >= 2 },
+    { label: 'BITE encrypted settlement...', active: step >= 3 },
+    { label: step < 4 ? 'Settling...' : paymentResult?.success ? 'x402 payment settled' : 'Payment failed', active: step >= 4 },
   ];
 
   return (
@@ -46,7 +46,11 @@ export function PaymentSettlement({ paymentResult, winnerName, amount, provider 
           : 'bg-white/5 border-white/10'
       }`}
     >
-      <h3 className="font-semibold mb-4">x402 Payment Settlement</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <h3 className="font-semibold">x402 Payment Settlement</h3>
+        <span className="font-mono text-[8px] px-1 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.1)', color: 'rgba(96,165,250,0.6)' }}>AP2</span>
+        <span className="font-mono text-[8px] px-1 py-0.5 rounded" style={{ background: 'rgba(245,158,11,0.1)', color: 'rgba(245,158,11,0.6)' }}>BITE</span>
+      </div>
 
       <div className="space-y-2 mb-4">
         {steps.map((s, i) => (

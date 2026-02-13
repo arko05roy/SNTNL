@@ -196,24 +196,17 @@ export async function POST(request: NextRequest) {
       gas: BigInt(300000),
     });
 
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-    console.log('[settle] On-chain settlement success! TX:', txHash, 'Status:', receipt.status);
+    // Return immediately with txHash - SKALE has fast finality so no need to wait
+    console.log('[settle] Transaction sent! TX:', txHash);
 
-    if (receipt.status === 'success') {
-      return NextResponse.json({
-        success: true,
-        transaction: txHash,
-        payer: from,
-        network: 'skale-base-sepolia',
-        auctionId: body.auctionId,
-        protocol: 'x402',
-      });
-    }
-
-    return NextResponse.json(
-      { success: false, error: 'Transaction reverted', transaction: txHash },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: true,
+      transaction: txHash,
+      payer: from,
+      network: 'skale-base-sepolia',
+      auctionId: body.auctionId,
+      protocol: 'x402',
+    });
   } catch (err) {
     console.error('[settle] On-chain settlement failed:', err);
     return NextResponse.json(

@@ -192,16 +192,20 @@ export default function LandingPage() {
           {/* Hero Section */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-6" style={{ borderColor: 'rgba(34, 211, 238, 0.2)', background: 'rgba(34, 211, 238, 0.05)' }}>
-              <span className="text-[10px] font-mono text-cyan-400">Decentralized AI Infrastructure</span>
+              <span className="text-[10px] font-mono text-cyan-400">BITE Encrypted</span>
+              <span className="text-[10px] font-mono text-slate-600">·</span>
+              <span className="text-[10px] font-mono text-blue-400">AP2 Authorized</span>
+              <span className="text-[10px] font-mono text-slate-600">·</span>
+              <span className="text-[10px] font-mono text-cyan-400/70">x402 Settled</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
-              Autonomous AI Agent
+              Sealed-Bid Marketplace
               <br />
-              <span className="text-cyan-400">Procurement Network</span>
+              <span className="text-cyan-400">for AI Agents</span>
             </h1>
             <p className="text-slate-400 max-w-xl mx-auto mb-6 text-sm sm:text-base">
-              Sealed-bid marketplace where AI agents procure compute, data, and APIs. 
-              Encrypted bids prevent front-running. x402 payments for instant settlement.
+              Agents bid on compute, data, and APIs — encrypted with BITE threshold encryption.
+              No front-running. Winners pay via x402. Everything on SKALE.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link href="/orderbook" className="px-5 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-sm font-mono rounded border transition-colors" style={{ borderColor: 'rgba(34, 211, 238, 0.3)' }}>
@@ -341,10 +345,10 @@ export default function LandingPage() {
             <h2 className="text-sm font-mono text-slate-500 uppercase tracking-wider mb-8">How It Works</h2>
             <div className="flex flex-wrap justify-center items-start gap-4 sm:gap-8">
               {[
-                { step: '01', title: 'Providers List', desc: 'Register services with SLA terms' },
-                { step: '02', title: 'Agents Bid', desc: 'Submit encrypted sealed bids' },
-                { step: '03', title: 'Auction Clear', desc: 'Bids revealed & winners selected' },
-                { step: '04', title: 'Instant Pay', desc: 'x402 payments settle immediately' },
+                { step: '01', title: 'Providers List', desc: 'AP2 CartMandate — services on-chain' },
+                { step: '02', title: 'Agents Bid', desc: 'BITE threshold-encrypted bids' },
+                { step: '03', title: 'Auction Clear', desc: 'Decrypt, match, AP2 authorize' },
+                { step: '04', title: 'Settle', desc: 'x402 instant payment' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="text-center">
@@ -364,7 +368,9 @@ export default function LandingPage() {
               <div className="flex items-center gap-2 font-mono text-[10px] text-slate-600">
                 <span>SKALE</span>
                 <span className="text-slate-800">/</span>
-                <span>BITE</span>
+                <span>BITE v2</span>
+                <span className="text-slate-800">/</span>
+                <span>AP2</span>
                 <span className="text-slate-800">/</span>
                 <span>x402</span>
                 <span className="text-slate-800">/</span>

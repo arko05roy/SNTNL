@@ -23,7 +23,9 @@ export function Header({ biteAvailable, biteEpoch }: HeaderProps) {
           <div className="flex items-center gap-2 font-mono text-[10px]">
             <span className="text-gray-600">SKALE</span>
             <div className="w-px h-3 bg-gray-800" />
-            <span className="text-gray-600">BITE</span>
+            <span className="text-amber-500/70">BITE</span>
+            <div className="w-px h-3 bg-gray-800" />
+            <span className="text-blue-400/70">AP2</span>
             <div className="w-px h-3 bg-gray-800" />
             <span className="text-gray-600">x402</span>
           </div>

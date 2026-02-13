@@ -81,9 +81,12 @@ export function Orderbook({ asks, sealedBidCounts, biteAvailable, onClear, clear
         <div className="grid grid-cols-2">
           <div className="px-4 py-2 border-b border-r" style={{ borderColor: '#1a2540' }}>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] text-cyan-500/80 uppercase tracking-[0.2em]">
-                Asks — Providers
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] text-cyan-500/80 uppercase tracking-[0.2em]">
+                  Asks — Providers
+                </span>
+                <span className="font-mono text-[8px] px-1 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.1)', color: 'rgba(96,165,250,0.6)' }}>AP2 CartMandate</span>
+              </div>
               <span className="font-mono text-[10px] text-gray-600">
                 {asks.length} listed
               </span>
@@ -91,9 +94,12 @@ export function Orderbook({ asks, sealedBidCounts, biteAvailable, onClear, clear
           </div>
           <div className="px-4 py-2 border-b" style={{ borderColor: '#1a2540' }}>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] text-amber-500/80 uppercase tracking-[0.2em]">
-                Sealed Bids — Encrypted
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] text-amber-500/80 uppercase tracking-[0.2em]">
+                  Sealed Bids — Encrypted
+                </span>
+                <span className="font-mono text-[8px] px-1 py-0.5 rounded" style={{ background: 'rgba(245,158,11,0.1)', color: 'rgba(245,158,11,0.6)' }}>BITE v2</span>
+              </div>
               <span className="font-mono text-[10px] text-gray-600">
                 {totalBids} total
               </span>
@@ -305,9 +311,15 @@ export function Orderbook({ asks, sealedBidCounts, biteAvailable, onClear, clear
             </>
           )}
         </button>
-        <span className="font-mono text-[10px] text-gray-600 tracking-wider">
-          REVEAL + MATCH + SETTLE
-        </span>
+        <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-wider">
+          <span className="text-amber-500/50">BITE decrypt</span>
+          <span className="text-gray-700">→</span>
+          <span className="text-gray-500">match</span>
+          <span className="text-gray-700">→</span>
+          <span className="text-blue-400/50">AP2 authorize</span>
+          <span className="text-gray-700">→</span>
+          <span className="text-cyan-500/50">x402 settle</span>
+        </div>
       </div>
     </div>
   );

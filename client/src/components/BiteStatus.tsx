@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getBiteInstance } from '@/lib/bite';
+import { isBiteAvailable, getCommitteeInfo } from '@/lib/bite';
 
 interface BiteStatusData {
   available: boolean;
@@ -23,9 +23,8 @@ export function BiteStatus({ onStatusChange }: BiteStatusProps) {
 
   const checkBite = async () => {
     try {
-      const bite = getBiteInstance();
-      const info = await bite.getCommitteeInfo();
-      const available = !!info?.current?.publicKey;
+      const available = await isBiteAvailable();
+      const info = await getCommitteeInfo();
 
       const newStatus: BiteStatusData = {
         available,

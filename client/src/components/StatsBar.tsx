@@ -11,6 +11,7 @@ export function StatsBar({ agentCount, biteAvailable, bidCount, gasFees }: Stats
   const stats = [
     { label: 'Agents', value: String(agentCount), color: 'text-gray-200' },
     { label: 'BITE', value: biteAvailable ? 'Active' : '...', color: biteAvailable ? 'text-green-400' : 'text-amber-500' },
+    { label: 'AP2', value: 'Active', color: 'text-blue-400' },
     { label: 'Sealed Bids', value: String(bidCount), color: 'text-amber-400' },
     { label: 'Gas', value: String(gasFees), color: 'text-cyan-400/70' },
   ];

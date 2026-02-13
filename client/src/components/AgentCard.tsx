@@ -26,6 +26,10 @@ export function AgentCard({ agent }: AgentCardProps) {
           {(Number(agent.balance) / 1000).toFixed(0)}k
         </span>
       </div>
+      <div className="flex items-center gap-1.5 mt-1.5">
+        <span className="font-mono text-[7px] px-1 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.08)', color: 'rgba(96,165,250,0.5)' }}>AP2 Intent</span>
+        <span className="font-mono text-[7px] px-1 py-0.5 rounded" style={{ background: 'rgba(245,158,11,0.08)', color: 'rgba(245,158,11,0.5)' }}>BITE</span>
+      </div>
       <a
         href={getExplorerAddressUrl(agent.address)}
         target="_blank"
