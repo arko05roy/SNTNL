@@ -238,14 +238,19 @@ export async function POST(request: NextRequest) {
  * Mint sUSDC to agent if their balance is below the required amount.
  */
 async function ensureAgentBalance(agentAddress: string, minAmount: bigint) {
-  if (!DEPLOYER_KEY || !TOKEN_ADDRESS || !agentAddress) return;
+  const deployerKey = getDeployerKey();
+  const tokenAddress = getTokenAddress();
+  const rpcUrl = getRpcUrl();
 
-  const account = privateKeyToAccount(DEPLOYER_KEY);
-  const publicClient = createPublicClient({ chain: skaleChain, transport: http(RPC_URL) });
-  const walletClient = createWalletClient({ account, chain: skaleChain, transport: http(RPC_URL) });
+  if (!deployerKey || !tokenAddress || !agentAddress) return;
+
+  const account = privateKeyToAccount(deployerKey);
+  const skaleChain = getSkaleChain();
+  const publicClient = createPublicClient({ chain: skaleChain, transport: http(rpcUrl) });
+  const walletClient = createWalletClient({ account, chain: skaleChain, transport: http(rpcUrl) });
 
   const balance = await publicClient.readContract({
-    address: TOKEN_ADDRESS,
+    address: tokenAddress,
     abi: SENTINEL_USDC_ABI,
     functionName: 'balanceOf',
     args: [getAddress(agentAddress)],
@@ -255,7 +260,7 @@ async function ensureAgentBalance(agentAddress: string, minAmount: bigint) {
     const mintAmount = minAmount * BigInt(100);
     console.log(`[settle] Minting ${mintAmount} sUSDC to ${agentAddress}`);
     const hash = await walletClient.writeContract({
-      address: TOKEN_ADDRESS,
+      address: tokenAddress,
       abi: SENTINEL_USDC_ABI,
       functionName: 'mint',
       args: [getAddress(agentAddress), mintAmount],

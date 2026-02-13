@@ -69,6 +69,7 @@ function getDeployerClient() {
 }
 
 async function ensureAgentFunded(agentAddress: `0x${string}`) {
+  const publicClient = getPublicClient();
   const balance = await publicClient.getBalance({ address: agentAddress });
   const minBalance = parseEther('0.00001');
 
@@ -98,6 +99,7 @@ export async function POST(request: NextRequest) {
       case 'create': {
         const { serviceType, duration, minBid, maxBid } = body;
         const walletClient = getDeployerClient();
+        const publicClient = getPublicClient();
         const hash = await walletClient.writeContract({
           address: CONTRACT_ADDRESSES.sealedBidAuction,
           abi: SEALED_BID_AUCTION_ABI,
@@ -137,6 +139,8 @@ export async function POST(request: NextRequest) {
         await ensureAgentFunded(agentAccount.address);
 
         const walletClient = getWalletClient(agentPrivateKey as `0x${string}`);
+        const publicClient = getPublicClient();
+        const bite = getBite();
         const encryptedBytes = toHex(new TextEncoder().encode(encryptedBid));
 
         // Encode the plaintext calldata
@@ -204,6 +208,8 @@ export async function POST(request: NextRequest) {
         await ensureAgentFunded(agentAccount.address);
 
         const walletClient = getWalletClient(agentPrivateKey as `0x${string}`);
+        const publicClient = getPublicClient();
+        const bite = getBite();
 
         const calldata = encodeFunctionData({
           abi: SEALED_BID_AUCTION_ABI,
@@ -247,6 +253,7 @@ export async function POST(request: NextRequest) {
       case 'finalize': {
         const { auctionId } = body;
         const walletClient = getDeployerClient();
+        const publicClient = getPublicClient();
         const hash = await walletClient.writeContract({
           address: CONTRACT_ADDRESSES.sealedBidAuction,
           abi: SEALED_BID_AUCTION_ABI,
@@ -263,6 +270,7 @@ export async function POST(request: NextRequest) {
       // ---------------------------------------------------------------
       case 'decrypt': {
         const { txHash } = body;
+        const bite = getBite();
         const decrypted = await bite.getDecryptedTransactionData(txHash);
         return NextResponse.json({
           txHash,
@@ -275,6 +283,7 @@ export async function POST(request: NextRequest) {
       // ---------------------------------------------------------------
       case 'read': {
         const { auctionId } = body;
+        const publicClient = getPublicClient();
         const auctionData = await publicClient.readContract({
           address: CONTRACT_ADDRESSES.sealedBidAuction,
           abi: SEALED_BID_AUCTION_ABI,
