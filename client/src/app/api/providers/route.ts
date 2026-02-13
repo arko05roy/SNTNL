@@ -31,6 +31,14 @@ const skaleChain = defineChain({
   testnet: true,
 });
 
+interface ProviderInfo {
+  providerAddress: string;
+  name: string;
+  serviceType: string;
+  basePrice: bigint;
+  active: boolean;
+}
+
 const publicClient = createPublicClient({
   chain: skaleChain,
   transport: http(process.env.NEXT_PUBLIC_SKALE_RPC_URL!),
@@ -53,7 +61,7 @@ const JURISDICTION_RE = /^[A-Z]{2}(-[A-Z0-9]{1,4})?$/;
 const VALID_SERVICE_TYPES = ['GPU Compute', 'Data Feed', 'API Access'];
 const VALID_SUPPORT_TIERS = ['community', 'standard', 'premium'];
 
-function validateApplication(body: any): string | null {
+function validateApplication(body: Record<string, unknown>): string | null {
   // Business identity
   if (!body.legalName || body.legalName.trim().length < 2) return 'Legal entity name is required (min 2 characters)';
   if (!body.contactEmail || !EMAIL_RE.test(body.contactEmail)) return 'Valid contact email is required';
@@ -98,7 +106,7 @@ export async function POST(request: NextRequest) {
             abi: SERVICE_REGISTRY_ABI,
             functionName: 'getProvider',
             args: [body.walletAddress as `0x${string}`],
-          }) as any;
+          }) as ProviderInfo;
           if (existing.providerAddress !== '0x0000000000000000000000000000000000000000') {
             return NextResponse.json({ error: 'This wallet is already registered as a provider' }, { status: 409 });
           }
@@ -203,7 +211,7 @@ export async function POST(request: NextRequest) {
               abi: SERVICE_REGISTRY_ABI,
               functionName: 'getProvider',
               args: [addr],
-            }) as any;
+            }) as ProviderInfo;
 
             const profile = providerProfiles.get(addr.toLowerCase());
 
@@ -235,10 +243,11 @@ export async function POST(request: NextRequest) {
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`[providers/${action}] Error:`, error);
+    const message = error instanceof Error ? error.message : 'Operation failed';
     return NextResponse.json(
-      { error: error.message || 'Operation failed' },
+      { error: message },
       { status: 500 }
     );
   }

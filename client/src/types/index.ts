@@ -130,6 +130,39 @@ export interface ProviderProfile {
   registeredAt: number;
 }
 
+// Orderbook types
+export interface OrderbookAsk {
+  provider: ServiceProvider;
+  listedAt: number;
+}
+
+export interface SealedBidEntry {
+  agentId: string;
+  serviceType: string;
+  encrypted: string;
+  amount: bigint;
+  timestamp: number;
+}
+
+export interface OrderbookState {
+  asks: OrderbookAsk[];
+  bids: Map<string, SealedBidEntry[]>;
+  lastCleared?: ClearingResult;
+}
+
+export interface ClearingResult {
+  timestamp: number;
+  matches: ClearingMatch[];
+}
+
+export interface ClearingMatch {
+  serviceType: string;
+  provider: ServiceProvider;
+  winner: { agentId: string; agentName: string; amount: bigint };
+  paymentTxHash?: string;
+  auctionOnChainId?: number;
+}
+
 export interface AuctionReceipt {
   auctionId: number;
   onChainId?: number;

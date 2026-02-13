@@ -9,21 +9,21 @@ interface StatsBarProps {
 
 export function StatsBar({ agentCount, biteAvailable, bidCount, gasFees }: StatsBarProps) {
   const stats = [
-    { label: 'Active Agents', value: String(agentCount), color: 'text-white' },
-    { label: 'BITE Status', value: biteAvailable ? 'Active' : 'Checking...', color: biteAvailable ? 'text-green-400' : 'text-yellow-400' },
-    { label: 'Encrypted Bids', value: String(bidCount), color: 'text-white' },
-    { label: 'Gas Fees', value: String(gasFees), color: 'text-blue-400' },
+    { label: 'Agents', value: String(agentCount), color: 'text-gray-200' },
+    { label: 'BITE', value: biteAvailable ? 'Active' : '...', color: biteAvailable ? 'text-green-400' : 'text-amber-500' },
+    { label: 'Sealed Bids', value: String(bidCount), color: 'text-amber-400' },
+    { label: 'Gas', value: String(gasFees), color: 'text-cyan-400/70' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto grid grid-cols-4 gap-4 mb-8">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/[0.07] transition-colors"
-        >
-          <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">{stat.label}</div>
-          <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+    <div className="max-w-6xl mx-auto flex items-center gap-6 mb-6 px-4 py-2.5 rounded border" style={{ background: '#0c1220', borderColor: '#1a2540' }}>
+      {stats.map((stat, i) => (
+        <div key={stat.label} className="flex items-center gap-3">
+          {i > 0 && <div className="w-px h-4 bg-gray-800" />}
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] text-gray-600 uppercase tracking-wider">{stat.label}</span>
+            <span className={`font-mono text-[13px] tabular-nums font-semibold ${stat.color}`}>{stat.value}</span>
+          </div>
         </div>
       ))}
     </div>

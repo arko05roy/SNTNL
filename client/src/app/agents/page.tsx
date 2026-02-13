@@ -48,9 +48,9 @@ export default function AgentsPage() {
     setServices((prev) => {
       const next = [...prev];
       if (field === 'skills' || field === 'domains') {
-        (next[idx] as any)[field] = value.split(',').map((s) => s.trim()).filter(Boolean);
+        next[idx] = { ...next[idx], [field]: value.split(',').map((s) => s.trim()).filter(Boolean) };
       } else {
-        (next[idx] as any)[field] = value;
+        next[idx] = { ...next[idx], [field]: value };
       }
       return next;
     });

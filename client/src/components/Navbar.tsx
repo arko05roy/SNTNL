@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Auctions' },
-  { href: '/agents', label: 'My Agents' },
+  { href: '/', label: 'Home' },
+  { href: '/orderbook', label: 'Orderbook' },
+  { href: '/agents', label: 'Agents' },
   { href: '/providers', label: 'Providers' },
 ];
 
@@ -14,24 +15,31 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="text-lg font-bold tracking-tight bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+    <nav
+      className="sticky top-0 z-50 border-b"
+      style={{ background: 'rgba(6, 11, 20, 0.85)', borderColor: '#1a2540', backdropFilter: 'blur(12px)' }}
+    >
+      <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="font-mono text-[13px] font-bold tracking-tight text-cyan-400 hover:text-cyan-300 transition-colors">
             SENTINEL
           </Link>
-          <div className="flex items-center gap-1">
+          <div className="w-px h-4" style={{ background: '#1a2540' }} />
+          <div className="flex items-center gap-0.5">
             {NAV_LINKS.map(({ href, label }) => {
               const active = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  className={`px-2.5 py-1 rounded font-mono text-[11px] transition-colors ${
                     active
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                      ? 'text-cyan-400'
+                      : 'text-gray-500 hover:text-gray-300'
                   }`}
+                  style={{
+                    background: active ? 'rgba(34, 211, 238, 0.06)' : 'transparent',
+                  }}
                 >
                   {label}
                 </Link>

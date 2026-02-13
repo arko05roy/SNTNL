@@ -33,7 +33,7 @@ export function PaymentSettlement({ paymentResult, winnerName, amount, provider 
     { label: 'Initiating x402 payment...', active: step >= 1 },
     { label: 'Signing authorization...', active: step >= 2 },
     { label: 'Processing settlement...', active: step >= 3 },
-    { label: paymentResult?.success ? 'Payment settled' : 'Payment failed', active: step >= 4 },
+    { label: step < 4 ? 'Settling payment...' : paymentResult?.success ? 'Payment settled' : 'Payment failed', active: step >= 4 },
   ];
 
   return (
