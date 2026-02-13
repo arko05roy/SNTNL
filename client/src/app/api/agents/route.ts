@@ -5,7 +5,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicClient, http } from 'viem';
+import { createPublicClient, createWalletClient, http, toHex, parseEther } from 'viem';
+import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
 import { defineChain } from 'viem';
 import { AGENT_REGISTRY_ABI, CONTRACT_ADDRESSES } from '@/lib/contracts';
 import type { AgentRegistrationFile, RegisteredAgent } from '@/types';

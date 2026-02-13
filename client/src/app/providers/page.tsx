@@ -431,7 +431,7 @@ export default function ProvidersPage() {
               {SEED_PROVIDERS.map((p) => (
                 <ProviderCard
                   key={p.address}
-                  provider={{ ...p, active: true, isOnChain: false } as OnChainProvider}
+                  provider={{ ...p, active: true, isOnChain: false } as unknown as OnChainProvider}
                   isOnChain={false}
                 />
               ))}

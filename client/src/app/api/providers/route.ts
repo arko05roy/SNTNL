@@ -62,26 +62,42 @@ const VALID_SERVICE_TYPES = ['GPU Compute', 'Data Feed', 'API Access'];
 const VALID_SUPPORT_TIERS = ['community', 'standard', 'premium'];
 
 function validateApplication(body: Record<string, unknown>): string | null {
+  const legalName = String(body.legalName ?? '');
+  const contactEmail = String(body.contactEmail ?? '');
+  const website = body.website ? String(body.website) : null;
+  const jurisdiction = String(body.jurisdiction ?? '');
+  const providerName = String(body.providerName ?? '');
+  const serviceType = String(body.serviceType ?? '');
+  const basePrice = body.basePrice;
+  const serviceDescription = String(body.serviceDescription ?? '');
+  const capacityDetails = String(body.capacityDetails ?? '');
+  const uptimeCommitment = body.uptimeCommitment;
+  const supportTier = String(body.supportTier ?? '');
+  const tosAccepted = body.tosAccepted;
+  const liabilityAcknowledged = body.liabilityAcknowledged;
+  const dataProcessingConsent = body.dataProcessingConsent;
+  const walletAddress = String(body.walletAddress ?? '');
+
   // Business identity
-  if (!body.legalName || body.legalName.trim().length < 2) return 'Legal entity name is required (min 2 characters)';
-  if (!body.contactEmail || !EMAIL_RE.test(body.contactEmail)) return 'Valid contact email is required';
-  if (body.website && !/^https?:\/\/.+/.test(body.website)) return 'Website must be a valid URL starting with http(s)://';
-  if (!body.jurisdiction || !JURISDICTION_RE.test(body.jurisdiction)) return 'Jurisdiction is required (ISO 3166 format, e.g. US-DE, SG, CH)';
+  if (!legalName || legalName.trim().length < 2) return 'Legal entity name is required (min 2 characters)';
+  if (!contactEmail || !EMAIL_RE.test(contactEmail)) return 'Valid contact email is required';
+  if (website && !/^https?:\/\/.+/.test(website)) return 'Website must be a valid URL starting with http(s)://';
+  if (!jurisdiction || !JURISDICTION_RE.test(jurisdiction)) return 'Jurisdiction is required (ISO 3166 format, e.g. US-DE, SG, CH)';
 
   // Service details
-  if (!body.providerName || body.providerName.trim().length < 2) return 'Provider name is required';
-  if (!VALID_SERVICE_TYPES.includes(body.serviceType)) return `Service type must be one of: ${VALID_SERVICE_TYPES.join(', ')}`;
-  if (!body.basePrice || isNaN(Number(body.basePrice)) || Number(body.basePrice) <= 0) return 'Base price must be a positive number';
-  if (!body.serviceDescription || body.serviceDescription.trim().length < 20) return 'Service description is required (min 20 characters)';
-  if (!body.capacityDetails || body.capacityDetails.trim().length < 5) return 'Capacity details are required';
-  if (body.uptimeCommitment == null || body.uptimeCommitment < 90 || body.uptimeCommitment > 100) return 'Uptime commitment must be between 90% and 100%';
-  if (!VALID_SUPPORT_TIERS.includes(body.supportTier)) return `Support tier must be one of: ${VALID_SUPPORT_TIERS.join(', ')}`;
+  if (!providerName || providerName.trim().length < 2) return 'Provider name is required';
+  if (!VALID_SERVICE_TYPES.includes(serviceType)) return `Service type must be one of: ${VALID_SERVICE_TYPES.join(', ')}`;
+  if (!basePrice || isNaN(Number(basePrice)) || Number(basePrice) <= 0) return 'Base price must be a positive number';
+  if (!serviceDescription || serviceDescription.trim().length < 20) return 'Service description is required (min 20 characters)';
+  if (!capacityDetails || capacityDetails.trim().length < 5) return 'Capacity details are required';
+  if (uptimeCommitment == null || Number(uptimeCommitment) < 90 || Number(uptimeCommitment) > 100) return 'Uptime commitment must be between 90% and 100%';
+  if (!VALID_SUPPORT_TIERS.includes(supportTier)) return `Support tier must be one of: ${VALID_SUPPORT_TIERS.join(', ')}`;
 
   // Legal
-  if (!body.tosAccepted) return 'You must accept the Terms of Service';
-  if (!body.liabilityAcknowledged) return 'You must acknowledge the liability terms';
-  if (!body.dataProcessingConsent) return 'You must consent to data processing terms';
-  if (!body.walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(body.walletAddress)) return 'Valid wallet address is required';
+  if (!tosAccepted) return 'You must accept the Terms of Service';
+  if (!liabilityAcknowledged) return 'You must acknowledge the liability terms';
+  if (!dataProcessingConsent) return 'You must consent to data processing terms';
+  if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) return 'Valid wallet address is required';
 
   return null;
 }
