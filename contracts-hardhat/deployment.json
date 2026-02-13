@@ -1,0 +1,13 @@
+{
+  "network": "SKALE Base Sepolia Testnet",
+  "chainId": 324705682,
+  "rpcUrl": "https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha",
+  "deployer": "0xABaF59180e0209bdB8b3048bFbe64e855074C0c4",
+  "timestamp": "2026-02-13T07:07:28.115Z",
+  "contracts": {
+    "ServiceRegistry": "0x5754C71c2474FE8F2B83C43432Faf0AC94cc24A5",
+    "SealedBidAuction": "0x98eFA762eDa5FB0C3BA02296c583A5a542c66c8b",
+    "AgentRegistry": "0x31DA867c6C12eCEBbb738d97198792901431e228",
+    "SentinelUSDC": "0x6bc10d034D0824ee67EaC1e4E66047b723a8D873"
+  }
+}

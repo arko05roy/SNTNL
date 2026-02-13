@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Next.js
+client/.next/
+client/out/
+client/build/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Hardhat
+contracts-hardhat/cache/
+contracts-hardhat/artifacts/
+contracts-hardhat/typechain-types/
+
+# Misc
+*.pem
+.vercel
+.claude/
+.temp_docs/
+
+# Large files not needed in repo
+BUILD.md
+final.md
