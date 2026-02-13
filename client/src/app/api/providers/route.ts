@@ -21,15 +21,17 @@ import type { ProviderProfile } from '@/types';
 
 const TOS_CURRENT_VERSION = '1.0.0';
 
-const skaleChain = defineChain({
-  id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
-  name: 'SKALE Base Sepolia',
-  nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
-  rpcUrls: {
-    default: { http: [process.env.NEXT_PUBLIC_SKALE_RPC_URL!] },
-  },
-  testnet: true,
-});
+function getSkaleChain() {
+  return defineChain({
+    id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
+    name: 'SKALE Base Sepolia',
+    nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
+    rpcUrls: {
+      default: { http: [process.env.NEXT_PUBLIC_SKALE_RPC_URL!] },
+    },
+    testnet: true,
+  });
+}
 
 interface ProviderInfo {
   providerAddress: string;
@@ -39,10 +41,12 @@ interface ProviderInfo {
   active: boolean;
 }
 
-const publicClient = createPublicClient({
-  chain: skaleChain,
-  transport: http(process.env.NEXT_PUBLIC_SKALE_RPC_URL!),
-});
+function getPublicClient() {
+  return createPublicClient({
+    chain: getSkaleChain(),
+    transport: http(process.env.NEXT_PUBLIC_SKALE_RPC_URL!),
+  });
+}
 
 // In-memory store for provider profiles + approval tokens
 // Production: database with encryption at rest
@@ -116,6 +120,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if already registered on-chain
+        const publicClient = getPublicClient();
         try {
           const existing = await publicClient.readContract({
             address: CONTRACT_ADDRESSES.serviceRegistry,
@@ -213,6 +218,7 @@ export async function POST(request: NextRequest) {
 
       // List providers (on-chain data + profiles)
       case 'list': {
+        const publicClient = getPublicClient();
         const providerAddresses = await publicClient.readContract({
           address: CONTRACT_ADDRESSES.serviceRegistry,
           abi: SERVICE_REGISTRY_ABI,

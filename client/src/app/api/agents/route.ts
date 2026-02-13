@@ -11,28 +11,38 @@ import { defineChain } from 'viem';
 import { AGENT_REGISTRY_ABI, CONTRACT_ADDRESSES } from '@/lib/contracts';
 import type { AgentRegistrationFile, RegisteredAgent } from '@/types';
 
-const skaleChain = defineChain({
-  id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
-  name: 'SKALE Base Sepolia',
-  nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
-  rpcUrls: {
-    default: { http: [process.env.NEXT_PUBLIC_SKALE_RPC_URL!] },
-  },
-  testnet: true,
-});
+function getSkaleChain() {
+  return defineChain({
+    id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
+    name: 'SKALE Base Sepolia',
+    nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
+    rpcUrls: {
+      default: { http: [process.env.NEXT_PUBLIC_SKALE_RPC_URL!] },
+    },
+    testnet: true,
+  });
+}
 
-const transport = http(process.env.NEXT_PUBLIC_SKALE_RPC_URL!);
+function getTransport() {
+  return http(process.env.NEXT_PUBLIC_SKALE_RPC_URL!);
+}
 
-const publicClient = createPublicClient({
-  chain: skaleChain,
-  transport,
-});
+function getPublicClient() {
+  return createPublicClient({
+    chain: getSkaleChain(),
+    transport: getTransport(),
+  });
+}
 
 function getDeployerClient() {
   const deployerKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
   if (!deployerKey) throw new Error('Deployer key not configured');
   const account = privateKeyToAccount(deployerKey);
-  return createWalletClient({ account, chain: skaleChain, transport });
+  return createWalletClient({
+    account,
+    chain: getSkaleChain(),
+    transport: getTransport()
+  });
 }
 
 // In-memory store for agent private keys (production: encrypted storage / KMS)
@@ -74,6 +84,7 @@ export async function POST(request: NextRequest) {
 
         // Register on-chain (deployer is caller → becomes NFT owner)
         const deployer = getDeployerClient();
+        const publicClient = getPublicClient();
         const hash = await deployer.writeContract({
           address: CONTRACT_ADDRESSES.agentRegistry,
           abi: AGENT_REGISTRY_ABI,
@@ -133,6 +144,7 @@ export async function POST(request: NextRequest) {
 
         // Query deployer's agents (deployer registers on behalf of users)
         const deployer = getDeployerClient();
+        const publicClient = getPublicClient();
         const queryAddress = deployer.account.address;
 
         const agentIds = await publicClient.readContract({

@@ -16,31 +16,44 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createWalletClient, createPublicClient, http, getAddress, defineChain } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-const TOKEN_ADDRESS = process.env.NEXT_PUBLIC_PAYMENT_TOKEN_ADDRESS as `0x${string}`;
-const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
-const RPC_URL = process.env.NEXT_PUBLIC_SKALE_RPC_URL || '';
-const PAY_TO = process.env.NEXT_PUBLIC_REGISTRY_ADDRESS || '0x5754C71c2474FE8F2B83C43432Faf0AC94cc24A5';
+function getTokenAddress() {
+  return process.env.NEXT_PUBLIC_PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+}
+
+function getDeployerKey() {
+  return process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
+}
+
+function getRpcUrl() {
+  return process.env.NEXT_PUBLIC_SKALE_RPC_URL || '';
+}
+
+function getPayTo() {
+  return process.env.NEXT_PUBLIC_REGISTRY_ADDRESS || '0x5754C71c2474FE8F2B83C43432Faf0AC94cc24A5';
+}
 
 // Settlement fee in token smallest units (1000 = 0.001 sUSDC)
 const SETTLEMENT_AMOUNT = '1000';
 
 // Payment requirements returned on 402
-const PAYMENT_REQUIREMENTS = {
-  scheme: 'exact',
-  network: 'skale-base-sepolia',
-  maxAmountRequired: SETTLEMENT_AMOUNT,
-  asset: TOKEN_ADDRESS,
-  payTo: PAY_TO,
-  resource: '/api/settle',
-  description: 'Auction settlement fee',
-  mimeType: 'application/json',
-  outputSchema: null,
-  maxTimeoutSeconds: 300,
-  extra: {
-    name: 'SentinelUSDC',
-    version: '1',
-  },
-};
+function getPaymentRequirements() {
+  return {
+    scheme: 'exact',
+    network: 'skale-base-sepolia',
+    maxAmountRequired: SETTLEMENT_AMOUNT,
+    asset: getTokenAddress(),
+    payTo: getPayTo(),
+    resource: '/api/settle',
+    description: 'Auction settlement fee',
+    mimeType: 'application/json',
+    outputSchema: null,
+    maxTimeoutSeconds: 300,
+    extra: {
+      name: 'SentinelUSDC',
+      version: '1',
+    },
+  };
+}
 
 const SENTINEL_USDC_ABI = [
   {
@@ -79,12 +92,14 @@ const SENTINEL_USDC_ABI = [
   },
 ] as const;
 
-const skaleChain = defineChain({
-  id: 324705682,
-  name: 'SKALE Base Sepolia',
-  nativeCurrency: { name: 'sFUEL', symbol: 'sFUEL', decimals: 18 },
-  rpcUrls: { default: { http: [RPC_URL] } },
-});
+function getSkaleChain() {
+  return defineChain({
+    id: 324705682,
+    name: 'SKALE Base Sepolia',
+    nativeCurrency: { name: 'sFUEL', symbol: 'sFUEL', decimals: 18 },
+    rpcUrls: { default: { http: [getRpcUrl()] } },
+  });
+}
 
 export async function POST(request: NextRequest) {
   const paymentHeader = request.headers.get('X-PAYMENT') || request.headers.get('PAYMENT-SIGNATURE');
@@ -96,7 +111,7 @@ export async function POST(request: NextRequest) {
       {
         x402Version: 1,
         error: 'X-PAYMENT header is required',
-        accepts: [PAYMENT_REQUIREMENTS],
+        accepts: [getPaymentRequirements()],
       },
       { status: 402 }
     );
@@ -171,15 +186,18 @@ export async function POST(request: NextRequest) {
 
   // Execute transferWithAuthorization on-chain using deployer wallet
   try {
-    const account = privateKeyToAccount(DEPLOYER_KEY);
-    const publicClient = createPublicClient({ chain: skaleChain, transport: http(RPC_URL) });
-    const walletClient = createWalletClient({ account, chain: skaleChain, transport: http(RPC_URL) });
+    const account = privateKeyToAccount(getDeployerKey());
+    const skaleChain = getSkaleChain();
+    const rpcUrl = getRpcUrl();
+    const tokenAddress = getTokenAddress();
+    const publicClient = createPublicClient({ chain: skaleChain, transport: http(rpcUrl) });
+    const walletClient = createWalletClient({ account, chain: skaleChain, transport: http(rpcUrl) });
 
     console.log('[settle] Calling transferWithAuthorization on-chain...');
     console.log('[settle] from:', from, 'to:', to, 'value:', value, 'v:', v, 'r:', r, 's:', s);
 
     const txHash = await walletClient.writeContract({
-      address: TOKEN_ADDRESS,
+      address: tokenAddress,
       abi: SENTINEL_USDC_ABI,
       functionName: 'transferWithAuthorization',
       args: [

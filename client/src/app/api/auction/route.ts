@@ -22,33 +22,43 @@ import { defineChain } from 'viem';
 import { BITE } from '@skalenetwork/bite';
 import { SEALED_BID_AUCTION_ABI, CONTRACT_ADDRESSES } from '@/lib/contracts';
 
-const RPC_URL = process.env.NEXT_PUBLIC_SKALE_RPC_URL!;
+function getRpcUrl() {
+  return process.env.NEXT_PUBLIC_SKALE_RPC_URL!;
+}
 
-const skaleChain = defineChain({
-  id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
-  name: process.env.NEXT_PUBLIC_SKALE_CHAIN_NAME || 'SKALE Base Sepolia',
-  nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
-  rpcUrls: {
-    default: { http: [RPC_URL] },
-  },
-  testnet: true,
-});
+function getSkaleChain() {
+  return defineChain({
+    id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
+    name: process.env.NEXT_PUBLIC_SKALE_CHAIN_NAME || 'SKALE Base Sepolia',
+    nativeCurrency: { name: 'CREDIT', symbol: 'CREDIT', decimals: 18 },
+    rpcUrls: {
+      default: { http: [getRpcUrl()] },
+    },
+    testnet: true,
+  });
+}
 
-const transport = http(RPC_URL);
+function getTransport() {
+  return http(getRpcUrl());
+}
 
-const publicClient = createPublicClient({
-  chain: skaleChain,
-  transport,
-});
+function getPublicClient() {
+  return createPublicClient({
+    chain: getSkaleChain(),
+    transport: getTransport(),
+  });
+}
 
-const bite = new BITE(RPC_URL);
+function getBite() {
+  return new BITE(getRpcUrl());
+}
 
 function getWalletClient(privateKey: `0x${string}`) {
   const account = privateKeyToAccount(privateKey);
   return createWalletClient({
     account,
-    chain: skaleChain,
-    transport,
+    chain: getSkaleChain(),
+    transport: getTransport(),
   });
 }
 

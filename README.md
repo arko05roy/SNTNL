@@ -2,199 +2,202 @@
 
 ## When AI Agents Go Shopping, Who's Watching?
 
-Every day, enterprise AI agents spend billions on compute, data feeds, and API access. Every purchase broadcasts their strategy to the world. Every bid reveals their valuation. Every transaction leaks competitive intelligence.
+Every autonomous agent transaction broadcasts strategy. Your trading bot's API purchases reveal which data sources you value. Your procurement agent's GPU bids expose budget constraints. Your research agent's service subscriptions leak competitive intelligence.
 
-**SENTINEL changes that.**
+**The blockchain's transparency becomes a weapon against you.**
 
----
+Competitors reverse-engineer your models by watching your purchases. Providers manipulate prices when they see demand signals. MEV bots front-run your intents. Every losing bid becomes public knowledge of what you were willing to pay but didn't win.
 
-## The Problem: AI Agents Can't Shop Privately
-
-Imagine your trading algorithm broadcasting its data source purchases. Your research agent revealing which APIs it values most. Your procurement bot announcing budget constraints to every seller.
-
-In today's transparent blockchain world:
-- **Sellers manipulate prices** when they see your valuation
-- **Competitors steal strategy** by watching your purchases
-- **Front-runners exploit** your transaction intent
-- **Every failed bid** becomes public knowledge
-
-Autonomous agents need to transact like enterprises do: **privately, conditionally, and with authorization controls.**
+**SENTINEL changes the game.**
 
 ---
 
-## The Solution: Sealed Commerce with Cryptographic Guarantees
+## What We Built
 
-SENTINEL is the first private procurement marketplace where AI agents can buy and sell services without exposing strategy, budget, or intent until the deal is done.
+A **private orderbook** where autonomous agents transact with commerce-grade confidentiality:
 
-### 🔒 Sealed-Bid Auctions with BITE
-Agents submit **encrypted bids** that remain sealed until the auction deadline. When time's up, only the winner is revealed—losing bids stay private forever. Sellers can't see who bid what. Competitors can't extract valuations. Front-runners can't exploit intent.
+**Agents bid blind** → Bids encrypted with two-layer BITE until auction deadline
+**Losers stay sealed forever** → No strategy leakage, permanent privacy
+**Winners pay with authorization** → AP2 mandate chains enforce spending policies
+**Settlement is instant** → x402 protocol, zero gas, cryptographic receipts
 
-**How it works:**
-Blockchain Integrated Threshold Encryption (BITE) uses BLS threshold cryptography to encrypt bids on-chain. The encryption is conditional—it only unlocks when the auction timer expires. No central decryption authority. No trusted third party. Just pure cryptographic enforcement.
-
-### ⚡ Instant Settlement with Authorization Flow
-When an agent wins, payment happens instantly—but only after explicit authorization. SENTINEL implements a clean **intent → authorize → settle → receipt** flow that keeps humans in control when needed and enables full autonomy when safe.
-
-**How it works:**
-AP2 (Authorization Protocol 2) handles the authorization layer. x402 (HTTP 402 Payment Required) executes the settlement on-chain using EIP-3009 signed transfers. The agent creates payment intent, gets authorization (human or programmatic), executes settlement via x402, and receives a cryptographic receipt with full audit trail. All on SKALE's zero-gas infrastructure.
-
-### 🤖 Agent Identity & Autonomous Wallets
-Every agent is an on-chain identity with its own wallet, spending limits, and service credentials. Agents register once, transact autonomously, and maintain verifiable reputation across all interactions.
-
-**How it works:**
-ERC-721 agent registry with ERC-8004-aligned metadata. Each agent gets a unique NFT identity bound to an autonomous wallet powered by Coinbase CDP SDK. Agents can be permissioned with spending policies, allowlists, and conditional execution rules—all enforced cryptographically.
+This isn't just privacy. This is **confidential transactions for the age of autonomous agents.**
 
 ---
 
-## Demo Flow: GPU Procurement in 60 Seconds
+## The Three Layers
 
-**1. Discovery** → Agent browses on-chain provider registry (GPU/Data/API services)
-**2. Auction Start** → Agent creates sealed-bid auction for H100 GPU access
-**3. Provider Bidding** → Multiple providers submit BITE-encrypted bids (sealed, private)
-**4. Deadline Hits** → 30-second auction period ends
-**5. Conditional Reveal** → BITE decrypts bids automatically (losers stay private)
-**6. Authorization** → Winning agent approves payment with AP2 authorization
-**7. Settlement** → x402 executes on-chain transfer via EIP-3009 signed authorization
-**8. Receipt** → Both parties receive cryptographic proof with transaction hash
+### 🔒 Layer 1: Privacy (BITE Conditional Encryption)
 
-**Every step is auditable. Every payment is authorized. Every strategy stays private.**
+**Two-layer encryption prevents front-running and strategy leakage.**
 
----
+When an agent bids, it encrypts **twice**:
+- **Layer 2:** The bid amount → encrypted with `bite.encryptMessage()` → 96+ bytes of ciphertext
+- **Layer 1:** The entire transaction → encrypted with `bite.encryptTransaction()` → opaque blob on-chain
 
-## Why This Matters
+**Why two layers?**
+Even after the transaction decrypts at the auction deadline, the bid amount **stays encrypted.** Only the winning agent reveals their Layer 2 amount. Losing agents never call `revealBid()`. Their bids remain as **ciphertext blobs forever.**
 
-### For AI Agents
-- **Strategic Privacy:** Buy without revealing budget or valuation strategy
-- **Anti-Manipulation:** Sellers can't adjust prices based on your willingness to pay
-- **Front-Run Protection:** Encrypted intent prevents MEV extraction
-- **Authorization Control:** Never spend without explicit approval (human or programmatic)
-- **Zero Gas:** All transactions free on SKALE—no ETH needed
+**Consensus enforces the timing:** SKALE validators run a BLS threshold committee (t-of-n). When the auction deadline passes and the block finalizes, the committee threshold-decrypts the transaction. No centralized authority. No trusted party. Pure cryptographic enforcement.
 
-### For Providers
-- **Fair Competition:** Win on value, not information asymmetry
-- **Instant Payment:** x402 settlement happens immediately on-chain
-- **Reputation Tracking:** Build verifiable service history with on-chain receipts
-- **Access Control:** Serve only authorized, registered agents
-
-### For Enterprises
-- **Audit Trail:** Every authorization and settlement is cryptographically logged
-- **Conditional Execution:** Set policies that trigger automatically (spend caps, SLA requirements)
-- **Human Override:** Keep humans in the loop for high-value decisions
-- **Compliance Ready:** Authorization records prove who approved what, when, and why
+**Result:** No front-running. No price manipulation. No strategy leakage. Competitors see **nothing.**
 
 ---
 
-## Architecture: Three Layers of Control
+### ⚖️ Layer 2: Authorization (AP2 Mandate Chains)
 
+**Hierarchical mandates prevent rogue spending.**
+
+Every transaction follows a mandate chain:
+
+**1. IntentMandate** (Spending Policy)
+```typescript
+{
+  agentName: "AlphaProcure",
+  serviceTypes: ["GPU Compute"],
+  maxSpend: 300000,
+  strategy: "aggressive"
+}
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    SENTINEL MARKETPLACE                      │
-├─────────────────────────────────────────────────────────────┤
-│  Agent Registration    Provider Registry    Auction Engine   │
-│  (ERC-721 Identity)    (Service Directory)  (Order Matching) │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   PRIVACY & AUTHORIZATION                    │
-├─────────────────────────────────────────────────────────────┤
-│  BITE Encryption       AP2 Authorization    Conditional      │
-│  (Sealed Bids)         (Intent → Approve)   Execution        │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   SETTLEMENT & IDENTITY                      │
-├─────────────────────────────────────────────────────────────┤
-│  x402 Protocol         EIP-3009 Transfers   SKALE (Zero Gas) │
-│  (Payment Standard)    (Signed Settlement)  (Instant Final)  │
-└─────────────────────────────────────────────────────────────┘
+Signed by the agent's owner. Defines constraints: which services, maximum spend, bidding behavior.
+
+**2. CartMandate** (Provider Commitment)
+```typescript
+{
+  provider: {
+    name: "H100 SF Bay",
+    serviceType: "GPU Compute",
+    basePrice: 250000,
+    sla: { uptimeCommitment: 99.9 }
+  },
+  signature: "0x..." // EIP-712 signed
+}
 ```
+Created when providers register. **Price locked.** No mid-auction changes.
+
+**3. PaymentMandate** (Authorization)
+```typescript
+{
+  cartMandate: { /* provider's offering */ },
+  agentName: "AlphaProcure",
+  bidAmount: 275000,
+  auctionId: 42,
+  authorization: { approvedBy: "0xABCD...", signature: "0x..." }
+}
+```
+Agent authorizes **this specific payment.** Not a blank check. This exact amount, to this exact provider, for this exact auction.
+
+**4. TransactionRecord** (Receipt)
+```typescript
+{
+  intentMandate: { /* spending policy */ },
+  cartMandate: { /* provider offering */ },
+  paymentMandate: { /* payment authorization */ },
+  settlement: {
+    transactionHash: "0xabc123...",
+    amountPaid: 275000,
+    success: true
+  }
+}
+```
+Full audit trail. Links mandates to on-chain settlement. **Cryptographic accountability.**
+
+**Validation happens at every step:** If the agent tries to pay outside its IntentMandate, validation fails. No transaction executes. **Policy enforced cryptographically, not by trust.**
 
 ---
 
-## Technical Stack: Production-Grade Infrastructure
+### ⚡ Layer 3: Settlement (x402 Instant Payment)
 
-**Frontend**
-Next.js 16, TypeScript, Tailwind CSS, RainbowKit
-Wagmi 2.x + Viem 2.x for wallet interactions
+**Gasless settlement with cryptographic receipts.**
 
-**Privacy Layer**
-`@skalenetwork/bite` — Real BITE SDK for threshold encryption
-BLS signatures, conditional decryption, zero-knowledge proofs
+Winners pay via x402 protocol:
+1. Agent signs EIP-3009 authorization off-chain
+2. Authorization goes to self-hosted facilitator (Next.js API route)
+3. Facilitator calls `transferWithAuthorization()` on SentinelUSDC contract
+4. Payment executes on-chain, zero gas (SKALE subsidizes)
+5. Transaction hash returned immediately (instant finality)
 
-**Authorization & Settlement**
-`@x402/fetch` + `@x402/evm` — x402 payment protocol implementation
-EIP-3009 `transferWithAuthorization` for gasless signed transfers
-AP2-compliant authorization flow with audit receipts
+**No custody.** The facilitator never holds funds. No external gateway. Full control.
 
-**Blockchain Infrastructure**
-SKALE Base Sepolia Testnet (Chain ID: 324705682)
-Zero gas fees, instant finality, EVM-compatible
-4 deployed smart contracts with verified source code
-
-**Agent Wallets**
-`@coinbase/coinbase-sdk` for autonomous key management
-Non-custodial, agent-owned wallets with spending policies
+**Result:** Payments settle in milliseconds. No waiting for confirmations. Zero gas fees. Full audit trail with transaction hashes.
 
 ---
 
-## Smart Contracts: On-Chain Guarantees
+## The Flow (60 Seconds, Start to Finish)
 
-**Deployed on SKALE Base Sepolia Testnet:**
+1. **Provider registers** → CartMandate created on-chain (signed service offering)
+2. **Agent registers** → ERC-721 identity minted, CDP wallet bound, spending policy set
+3. **Agent sees asks** → Provider listings visible (prices public, bidders hidden)
+4. **Agent bids** → Two-layer BITE encryption, opaque blob on-chain
+5. **Orderbook shows** → "3 bids" visible, not amounts or identities
+6. **Deadline hits** → BLS committee threshold-decrypts transactions
+7. **Clearing runs** → Matches highest valid bid to each ask
+8. **Winner authorizes** → PaymentMandate created, EIP-712 signature
+9. **x402 settles** → EIP-3009 transfer, zero gas, instant finality
+10. **Receipt generated** → TransactionRecord with mandate chain + tx hash
 
-**ServiceRegistry** → `0x5754C71c2474FE8F2B83C43432Faf0AC94cc24A5`
-Provider directory for GPU, data, and API services. Register once, visible forever.
-
-**SealedBidAuction** → `0x98eFA762eDa5FB0C3BA02296c583A5a542c66c8b`
-Sealed-bid auction engine with BITE encryption lifecycle. Submit encrypted, reveal conditionally, settle instantly.
-
-**AgentRegistry (ERC-721)** → `0x31DA867c6C12eCEBbb738d97198792901431e228`
-On-chain agent identity with ERC-8004 alignment. Mint agent NFT, bind wallet, set policies.
-
-**SentinelUSDC (EIP-3009)** → `0x6bc10d034D0824ee67EaC1e4E66047b723a8D873`
-Payment token with signed authorization transfers. Gasless, instant, auditable.
-
----
-
-## Key Innovations
-
-### 1. Real BITE Integration, Not Mocked
-Most hackathon projects simulate encryption. SENTINEL uses production `@skalenetwork/bite` SDK with real BLS threshold signatures. Bids are encrypted on-chain, decrypted conditionally by smart contract logic, and losing bids remain permanently private.
-
-### 2. Self-Hosted x402 Facilitator
-No external payment gateway. No third-party dependencies. SENTINEL's API acts as its own x402 facilitator, executing `transferWithAuthorization` directly on-chain. Full control, zero intermediaries.
-
-### 3. Authorization-First Design
-Every payment requires explicit authorization—whether human approval or programmatic policy. AP2 flow ensures clean separation: intent creation → authorization check → settlement execution → receipt generation. Nothing executes without approval.
-
-### 4. Zero-Gas Economics
-Every transaction on SKALE is free. Agents can bid, authorize, and settle without holding ETH. Removes friction from autonomous agent operations.
-
-### 5. Conditional Privacy at Scale
-BITE's conditional decryption means privacy isn't binary. Auction winners get revealed (transparency). Losers stay private (strategy protection). Best of both worlds.
+**Losers:** Bids never decrypt. No strategy leakage.
+**Winners:** Authorized payment. Cryptographic receipt. Full accountability.
 
 ---
 
-## Running SENTINEL Locally
+## Smart Contracts (Deployed & Verified)
+
+**SKALE Base Sepolia Testnet (Chain ID: 324705682)**
+
+### SealedBidAuction (`0x98eFA762eDa5FB0C3BA02296c583A5a542c66c8b`)
+Auctions with BITE-encrypted bid storage. Validates decrypted bids. Finalizes and emits winner events.
+
+### AgentRegistry (`0x31DA867c6C12eCEBbb738d97198792901431e228`)
+ERC-721 NFT for agent identities. Stores metadata. Binds autonomous wallets. ERC-8004 compliant.
+
+### ServiceRegistry (`0x5754C71c2474FE8F2B83C43432Faf0AC94cc24A5`)
+Provider directory. Stores CartMandates on-chain. Returns active listings.
+
+### SentinelUSDC (`0x6bc10d034D0824ee67EaC1e4E66047b723a8D873`)
+ERC-20 with EIP-3009 extension. Gasless signed transfers via `transferWithAuthorization()`.
+
+**Block Explorer:** https://base-sepolia-testnet-explorer.skalenodes.com
+
+---
+
+## Tech Stack
+
+**Frontend:** Next.js 16, TypeScript, Tailwind CSS, RainbowKit, Wagmi 2.x, Viem 2.x
+
+**Privacy:** `@skalenetwork/bite` v0.2.1 (BLS12-381 threshold signatures)
+
+**Authorization:** Custom AP2 implementation (IntentMandate, CartMandate, PaymentMandate, TransactionRecord)
+
+**Settlement:** `@x402/evm` + `@x402/fetch` (x402 protocol, EIP-3009 transfers)
+
+**Agent Wallets:** `@coinbase/coinbase-sdk` (CDP, non-custodial)
+
+**Blockchain:** SKALE Base Sepolia (zero gas, instant finality)
+
+---
+
+## Running Locally
 
 ```bash
-# Clone repository
+# Clone
 git clone <repository-url>
 cd SNTNL
 
-# Install client dependencies
+# Install
 cd client
 npm install
 
-# Configure environment
+# Configure
 cp .env.example .env.local
 # Add: SKALE RPC, contract addresses, CDP API keys
 
-# Run development server
+# Run
 npm run dev
 # Open http://localhost:3000
 ```
 
-### Deploy Smart Contracts
+### Deploy Contracts
 ```bash
 cd contracts-hardhat
 npm install
@@ -212,19 +215,21 @@ SNTNL/
 │   ├── src/
 │   │   ├── app/               # Pages & API routes
 │   │   │   ├── api/auction/   # Auction lifecycle
-│   │   │   ├── api/settle/    # x402 settlement facilitator
+│   │   │   ├── api/settle/    # x402 facilitator
 │   │   │   ├── api/agents/    # Agent management
 │   │   │   ├── api/providers/ # Provider registry
 │   │   │   ├── agents/        # Agent UI
-│   │   │   └── providers/     # Provider UI
+│   │   │   ├── providers/     # Provider UI
+│   │   │   └── orderbook/     # Main orderbook
 │   │   ├── components/        # React components
 │   │   ├── lib/
-│   │   │   ├── x402.ts        # x402 payment client
+│   │   │   ├── x402.ts        # x402 client
 │   │   │   ├── bite.ts        # BITE encryption
-│   │   │   ├── cdp-agents.ts  # CDP agent wallets
-│   │   │   ├── contracts.ts   # ABIs & addresses
-│   │   │   └── agents.ts      # Agent logic
-│   │   └── types/             # TypeScript definitions
+│   │   │   ├── ap2.ts         # AP2 mandates
+│   │   │   ├── cdp-agents.ts  # CDP wallets
+│   │   │   ├── orderbook.ts   # Matching logic
+│   │   │   └── contracts.ts   # ABIs & addresses
+│   │   └── types/             # TypeScript types
 │   └── package.json
 └── contracts-hardhat/          # Solidity contracts
     ├── contracts/
@@ -237,32 +242,80 @@ SNTNL/
 
 ---
 
-## What Makes This Real
+## Why This Matters
 
-**Verifiable On-Chain Activity**
-Every bid, authorization, and settlement has a transaction hash. Check the SKALE block explorer—these aren't mock transactions.
+### For AI Agents
+- **Strategic Privacy:** Bid without revealing budget or valuation strategy
+- **Anti-Manipulation:** Sellers can't adjust prices based on demand signals
+- **Front-Run Protection:** Encrypted intent prevents MEV extraction
+- **Authorization Control:** Never spend without explicit approval
+- **Zero Gas:** All transactions free—no ETH needed
 
-**Production SDKs**
-`@skalenetwork/bite`, `@x402/evm`, `@coinbase/coinbase-sdk`—all official, production-grade libraries. No custom crypto implementations.
+### For Providers
+- **Fair Competition:** Win on value, not information asymmetry
+- **Instant Payment:** x402 settlement happens immediately on-chain
+- **Locked Commitments:** CartMandates prevent price changes mid-auction
+- **Reputation Tracking:** Build verifiable service history with receipts
 
-**Authorization Audit Trail**
-Every payment logs: who authorized, when it was approved, what was executed, and the resulting transaction hash. Full accountability.
-
-**Conditional Execution**
-Bids only decrypt when the auction deadline passes. Payments only execute when authorization is granted. Policies enforce themselves cryptographically.
+### For Enterprises
+- **Audit Trail:** Every authorization and settlement cryptographically logged
+- **Conditional Execution:** Set policies that trigger automatically
+- **Human Override:** Keep humans in the loop for high-value decisions
+- **Compliance Ready:** Authorization records prove who approved what, when, why
 
 ---
 
-## Why SKALE, Why Now
+## The Three Guarantees
 
-SKALE is purpose-built for this use case:
-- **Zero gas fees** remove friction from autonomous agent transactions
-- **Instant finality** enables real-time settlement without waiting for confirmations
-- **Native BITE support** makes private conditional transactions a first-class primitive
-- **EVM compatibility** allows standard Solidity patterns and tooling
-- **Horizontal scalability** means the network grows as agent commerce scales
+### 1. Privacy That Prevents Front-Running
 
-As AI agents become economic actors, they need infrastructure designed for their workflows—not infrastructure retrofitted from human-centric DeFi.
+**Problem:** Public bids leak strategy. MEV bots front-run. Competitors see valuations.
+
+**Solution:** Two-layer BITE encryption. Bids sealed until clearing. Losers never decrypt.
+
+**Result:** No front-running. No price manipulation. No strategy leakage. **Your strategy stays proprietary.**
+
+---
+
+### 2. Authorization That Prevents Rogue Spending
+
+**Problem:** Agents with wallets can drain funds instantly. No spending caps. No approval flows.
+
+**Solution:** AP2 mandate chain. IntentMandate defines policies. PaymentMandate requires approval. Validation before execution.
+
+**Result:** Agents can't exceed limits. Payments need authorization. Policy violations caught before money moves. **Guardrails work cryptographically.**
+
+---
+
+### 3. Settlement That Leaves Audit Trails
+
+**Problem:** Manual payment reconciliation. Days to settle. No cryptographic proof.
+
+**Solution:** x402 instant settlement. EIP-3009 signed transfers. TransactionRecord links mandates to tx hashes.
+
+**Result:** Payments settle instantly. Zero gas. Full audit trail. **Compliance built-in.**
+
+---
+
+## What Makes This Commerce-Grade
+
+**Zero Gas Fees**
+SKALE subsidizes all transactions. Agents don't need ETH. No gas volatility. **Pure execution.**
+
+**Instant Finality**
+SKALE consensus provides instant finality. No confirmation waits. Settlement in milliseconds. **Real-time commerce.**
+
+**Production SDKs**
+`@skalenetwork/bite`, `@x402/evm`, `@coinbase/coinbase-sdk` — official libraries. No custom crypto. **Battle-tested primitives.**
+
+**Verifiable On-Chain**
+Every bid, settlement, finalization has a transaction hash. Judges can verify on block explorer. **No smoke and mirrors.**
+
+**Explicit Failure Modes**
+Committee unavailable → rejected. Decryption fails → reverted. Invalid bid → require() fails. BITE offline → fallback with warning. **No ambiguity.**
+
+**Self-Hosted Settlement**
+x402 facilitator is a Next.js API route. No external gateway. No custody. **Full control.**
 
 ---
 
@@ -272,15 +325,17 @@ SENTINEL proves a pattern:
 
 **Private Intent + Authorization Control + Instant Settlement = Trust at Scale**
 
-This isn't just for procurement. The same primitives enable:
-- Private DEX orders (no front-running)
-- Sealed-bid NFT auctions (fair discovery)
-- Confidential supply chain (trade secret protection)
-- Policy-based agent spending (enterprise guardrails)
-- Conditional escrow (SLA-enforced payments)
+This isn't just for GPU procurement. The same primitives enable:
+- **Private DEX orders** (no front-running)
+- **Sealed-bid NFT auctions** (fair discovery)
+- **Confidential supply chain** (trade secret protection)
+- **Policy-based agent spending** (enterprise guardrails)
+- **Conditional escrow** (SLA-enforced payments)
 
 Every autonomous system that handles money needs these three layers. SENTINEL shows how to build them.
 
 ---
 
-**Built with SKALE | Secured by BITE | Authorized by AP2 | Settled by x402**
+**Built on SKALE | Secured by BITE | Authorized by AP2 | Settled by x402**
+
+**This is commerce-grade privacy for autonomous agents. This is SENTINEL.**
