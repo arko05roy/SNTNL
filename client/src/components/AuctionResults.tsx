@@ -64,10 +64,23 @@ export function AuctionResults({ auction, agents, provider }: AuctionResultsProp
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className={`text-2xl font-bold ${isWinner ? 'text-green-400' : 'text-white'}`}>
-                    {(Number(bid.amount) / 1000).toFixed(1)}k
-                  </div>
-                  <div className="text-xs text-gray-500">tokens</div>
+                  {isWinner ? (
+                    <>
+                      <div className="text-2xl font-bold text-green-400">
+                        {(Number(bid.amount) / 1000).toFixed(1)}k
+                      </div>
+                      <div className="text-xs text-gray-500">tokens</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-mono text-sm text-amber-500/70">
+                        {bid.encrypted.slice(0, 16)}...
+                      </div>
+                      <div className="text-xs text-amber-600/60 uppercase tracking-wider">
+                        🔒 Sealed Forever
+                      </div>
+                    </>
+                  )}
                 </div>
                 {bid.txHash && (
                   <a

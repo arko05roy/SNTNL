@@ -7,6 +7,7 @@ import { getExplorerTxUrl } from '@/lib/contracts';
 interface RevealAnimationProps {
   bids: Bid[];
   agents: Agent[];
+  winnerId?: string; // Only this bid will be revealed
   onRevealComplete: () => void;
 }
 
@@ -20,65 +21,65 @@ function randomScramble(len: number): string {
   ).join('');
 }
 
-export function RevealAnimation({ bids, agents, onRevealComplete }: RevealAnimationProps) {
+export function RevealAnimation({ bids, agents, winnerId, onRevealComplete }: RevealAnimationProps) {
   const [revealStates, setRevealStates] = useState<RevealState[]>(
     bids.map(() => 'encrypted')
   );
   const [scrambleTexts, setScrambleTexts] = useState<string[]>(
     bids.map((b) => b.encrypted.slice(0, 16))
   );
-  const [currentReveal, setCurrentReveal] = useState(-1);
+  const [revealStarted, setRevealStarted] = useState(false);
 
-  // Stagger reveals with 1s delay
+  // Only reveal the winner after a short delay
   useEffect(() => {
-    if (currentReveal < bids.length - 1) {
-      const timer = setTimeout(() => setCurrentReveal((c) => c + 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (currentReveal === bids.length - 1) {
-      // Wait for last animation to finish, then signal complete
-      const timer = setTimeout(onRevealComplete, 1200);
-      return () => clearTimeout(timer);
+    if (!revealStarted && winnerId) {
+      const winnerIndex = bids.findIndex(b => b.agentId === winnerId);
+      if (winnerIndex === -1) {
+        // No winner found, complete immediately
+        setTimeout(onRevealComplete, 500);
+        return;
+      }
+
+      setRevealStarted(true);
+
+      // Start scrambling animation for winner
+      setTimeout(() => {
+        setRevealStates((prev) => {
+          const next = [...prev];
+          next[winnerIndex] = 'scrambling';
+          return next;
+        });
+
+        // Scramble for 800ms
+        const scrambleInterval = setInterval(() => {
+          setScrambleTexts((prev) => {
+            const next = [...prev];
+            next[winnerIndex] = randomScramble(12);
+            return next;
+          });
+        }, 50);
+
+        setTimeout(() => {
+          clearInterval(scrambleInterval);
+          setRevealStates((prev) => {
+            const next = [...prev];
+            next[winnerIndex] = 'revealed';
+            return next;
+          });
+          // Complete after reveal animation
+          setTimeout(onRevealComplete, 1200);
+        }, 800);
+      }, 1000);
+    } else if (!winnerId) {
+      // No winner specified, complete immediately
+      setTimeout(onRevealComplete, 500);
     }
-  }, [currentReveal, bids.length, onRevealComplete]);
-
-  // Scramble animation for current reveal
-  useEffect(() => {
-    if (currentReveal < 0) return;
-
-    setRevealStates((prev) => {
-      const next = [...prev];
-      next[currentReveal] = 'scrambling';
-      return next;
-    });
-
-    // Scramble for 800ms
-    const scrambleInterval = setInterval(() => {
-      setScrambleTexts((prev) => {
-        const next = [...prev];
-        next[currentReveal] = randomScramble(12);
-        return next;
-      });
-    }, 50);
-
-    const revealTimer = setTimeout(() => {
-      clearInterval(scrambleInterval);
-      setRevealStates((prev) => {
-        const next = [...prev];
-        next[currentReveal] = 'revealed';
-        return next;
-      });
-    }, 800);
-
-    return () => {
-      clearInterval(scrambleInterval);
-      clearTimeout(revealTimer);
-    };
-  }, [currentReveal]);
+  }, [revealStarted, winnerId, bids, onRevealComplete]);
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
-      <h2 className="text-2xl font-bold mb-2">Revealing Bids</h2>
-      <p className="text-gray-400 text-sm mb-6">Decrypting BITE-encrypted bids...</p>
+      <h2 className="text-2xl font-bold mb-2">Revealing Winner</h2>
+      <p className="text-gray-400 text-sm mb-6">Decrypting BITE-encrypted winner bid... Losing bids stay sealed forever.</p>
 
       <div className="space-y-3">
         {bids.map((bid, i) => {
@@ -107,9 +108,14 @@ export function RevealAnimation({ bids, agents, onRevealComplete }: RevealAnimat
 
               <div className="flex items-center gap-3">
                 {state === 'encrypted' && (
-                  <span className="text-green-400 text-sm font-mono opacity-50">
-                    {bid.encrypted.slice(0, 20)}...
-                  </span>
+                  <>
+                    <span className="text-amber-500/70 text-sm font-mono">
+                      {bid.encrypted.slice(0, 20)}...
+                    </span>
+                    <span className="text-xs text-amber-600/60 uppercase tracking-wider">
+                      🔒 Sealed
+                    </span>
+                  </>
                 )}
                 {state === 'scrambling' && (
                   <span className="text-yellow-400 text-sm font-mono animate-pulse">
@@ -117,9 +123,14 @@ export function RevealAnimation({ bids, agents, onRevealComplete }: RevealAnimat
                   </span>
                 )}
                 {state === 'revealed' && (
-                  <span className="text-white text-2xl font-bold animate-[scaleIn_0.3s_ease-out]">
-                    {amount}k
-                  </span>
+                  <>
+                    <span className="text-green-400 text-2xl font-bold animate-[scaleIn_0.3s_ease-out]">
+                      {amount}k
+                    </span>
+                    <span className="text-xs text-green-500/70 uppercase tracking-wider ml-2">
+                      Winner
+                    </span>
+                  </>
                 )}
                 {bid.revealTxHash && (
                   <a
