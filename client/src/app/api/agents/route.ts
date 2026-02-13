@@ -5,10 +5,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicClient, createWalletClient, http, parseEther, toHex } from 'viem';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, http } from 'viem';
 import { defineChain } from 'viem';
 import { AGENT_REGISTRY_ABI, CONTRACT_ADDRESSES } from '@/lib/contracts';
+import type { AgentRegistrationFile, RegisteredAgent } from '@/types';
 
 const skaleChain = defineChain({
   id: Number(process.env.NEXT_PUBLIC_SKALE_CHAIN_ID!),
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
             ]);
 
             // Parse registration file from data URI
-            let registrationFile: any = {};
+            let registrationFile: AgentRegistrationFile | undefined = undefined;
             try {
               if (uri.startsWith('data:application/json;base64,')) {
                 const json = Buffer.from(uri.replace('data:application/json;base64,', ''), 'base64').toString();

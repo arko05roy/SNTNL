@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const BOOT_LINES = [
@@ -35,6 +35,36 @@ const NAV_ITEMS = [
     desc: 'service provider registry — GPU, data feeds, APIs',
     shortcut: '03',
   },
+];
+
+const FEATURES = [
+  {
+    icon: '🔒',
+    title: 'Sealed-Bid Procurement',
+    desc: 'AI agents submit encrypted bids. No front-running. Fair clearing at auction end.',
+  },
+  {
+    icon: '🤖',
+    title: 'Autonomous Agents',
+    desc: 'ERC-8004 compliant agents with bound wallets. Self-directing procurement.',
+  },
+  {
+    icon: '⚡',
+    title: 'Instant Settlement',
+    desc: 'x402 payment protocol enables microtransactions. Pay per request.',
+  },
+  {
+    icon: '🔗',
+    title: 'On-Chain Verified',
+    desc: 'All providers verified on SKALE. SLA commitments enforced on-chain.',
+  },
+];
+
+const STATS = [
+  { label: 'Providers', value: '12' },
+  { label: 'Agents', value: '24' },
+  { label: 'Volume', value: '1.2M' },
+  { label: 'Uptime', value: '99.9%' },
 ];
 
 function useTypewriter(text: string, startDelay: number, speed = 18): { displayed: string; done: boolean } {
@@ -105,25 +135,16 @@ export default function LandingPage() {
     return () => clearTimeout(t);
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!bootDone) return;
-      
       const key = e.key;
       setPressedKey(key);
-      
-      if (key === '1') {
-        window.location.href = '/orderbook';
-      } else if (key === '2') {
-        window.location.href = '/agents';
-      } else if (key === '3') {
-        window.location.href = '/providers';
-      }
+      if (key === '1') window.location.href = '/orderbook';
+      else if (key === '2') window.location.href = '/agents';
+      else if (key === '3') window.location.href = '/providers';
     };
-
     const handleKeyUp = () => setPressedKey(null);
-
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     return () => {
@@ -132,421 +153,251 @@ export default function LandingPage() {
     };
   }, [bootDone]);
 
-  // Occasional glitch effect
   useEffect(() => {
     if (!bootDone) return;
-    
     const glitchInterval = setInterval(() => {
-      if (Math.random() > 0.85) {
+      if (Math.random() > 0.9) {
         setActiveGlitch(true);
-        setTimeout(() => setActiveGlitch(false), 120);
+        setTimeout(() => setActiveGlitch(false), 80);
       }
-    }, 3000);
-
+    }, 4000);
     return () => clearInterval(glitchInterval);
   }, [bootDone]);
 
-  const handleNavClick = useCallback((href: string) => {
-    // Could add transition effect here
-    window.location.href = href;
-  }, []);
-
   return (
     <div
-      className="min-h-screen flex flex-col relative overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-100"
+      className="min-h-screen flex flex-col relative overflow-hidden selection:bg-cyan-500/30"
       style={{ background: '#020408' }}
     >
-      {/* Animated gradient mesh background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse 90% 60% at 15% 35%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-            radial-gradient(ellipse 70% 50% at 85% 55%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse 60% 40% at 50% 15%, rgba(34, 211, 238, 0.1) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 60% at 70% 85%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)
-          `,
-        }}
-      />
+      {/* Background Effects */}
+      <BackgroundEffects />
 
-      {/* Hex pattern overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.015]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2322d3ee' fill-opacity='1'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Grid background with perspective */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-          transform: 'perspective(500px) rotateX(2deg)',
-          transformOrigin: 'center top',
-        }}
-      />
-
-      {/* Data stream left */}
-      <div className="absolute left-0 top-0 bottom-0 w-32 pointer-events-none overflow-hidden opacity-20">
-        <div className="absolute top-0 left-4 h-full w-[1px] bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent" />
-        {['0xFA23B12', '01', '10', 'BLOCK', 'TX', '0xFA2', 'SYNC', 'DATA'].map((text, i) => (
-          <div
-            key={i}
-            className="absolute left-8 font-mono text-[8px] text-cyan-400/60 whitespace-nowrap animate-stream-down-left"
-            style={{
-              top: `${(i * 15) - 5}%`,
-              animationDelay: `${i * 0.3}s`,
-            }}
-          >
-            {text}
+      {/* Header */}
+      <header className="relative z-10 flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded border border-cyan-500/30 flex items-center justify-center">
+            <span className="text-cyan-400 font-mono text-sm">S</span>
           </div>
-        ))}
-      </div>
+          <span className="font-mono text-sm text-white tracking-wide">SENTINEL</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-mono text-[10px] text-slate-500">SKALE Mainnet</span>
+        </div>
+      </header>
 
-      {/* Data stream right */}
-      <div className="absolute right-0 top-0 bottom-0 w-32 pointer-events-none overflow-hidden opacity-20">
-        <div className="absolute top-0 right-4 h-full w-[1px] bg-gradient-to-b from-transparent via-emerald-500/50 to-transparent" />
-        {['SYNC', '0xA1B2C3', 'PING', 'ACK', 'DATA', 'NULL', '0xDEAD', 'PONG'].map((text, i) => (
-          <div
-            key={i}
-            className="absolute right-8 font-mono text-[8px] text-emerald-400/60 whitespace-nowrap animate-stream-down-right"
-            style={{
-              top: `${(i * 15) - 5}%`,
-              animationDelay: `${i * 0.3 + 1.5}s`,
-            }}
-          >
-            {text}
-          </div>
-        ))}
-      </div>
-
-      {/* Scanning beam */}
-      <div 
-        className="absolute inset-0 pointer-events-none overflow-hidden"
-        style={{
-          maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
-        }}
-      >
-        <div 
-          className="absolute left-0 right-0 h-[200px] pointer-events-none animate-scan"
-          style={{
-            background: 'linear-gradient(180deg, transparent 0%, rgba(34, 211, 238, 0.03) 50%, transparent 100%)',
-            top: '-200px',
-          }}
-        />
-      </div>
-
-      {/* Floating particles - enhanced */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Larger glowing orbs */}
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={`orb-${i}`}
-            className="absolute rounded-full animate-float-orb"
-            style={{
-              left: `${10 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-              width: `${4 + (i % 3) * 2}px`,
-              height: `${4 + (i % 3) * 2}px`,
-              background: i % 2 === 0 ? 'rgba(34, 211, 238, 0.3)' : 'rgba(16, 185, 129, 0.3)',
-              boxShadow: i % 2 === 0 
-                ? `0 0 ${10 + i * 5}px rgba(34, 211, 238, 0.4)` 
-                : `0 0 ${10 + i * 5}px rgba(16, 185, 129, 0.4)`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${8 + i}s`,
-            }}
-          />
-        ))}
-        
-        {/* Tiny specks - static positions */}
-        {[
-          { l: 8, t: 12, d: 1.2 }, { l: 23, t: 45, d: 2.8 }, { l: 67, t: 23, d: 0.5 }, { l: 34, t: 78, d: 3.1 },
-          { l: 89, t: 34, d: 1.9 }, { l: 12, t: 56, d: 2.3 }, { l: 78, t: 67, d: 0.8 }, { l: 45, t: 89, d: 2.1 },
-          { l: 56, t: 23, d: 3.4 }, { l: 23, t: 12, d: 1.1 }, { l: 90, t: 78, d: 2.7 }, { l: 34, t: 45, d: 0.9 },
-          { l: 67, t: 56, d: 3.2 }, { l: 12, t: 34, d: 1.5 }, { l: 78, t: 12, d: 2.5 }, { l: 45, t: 67, d: 0.4 },
-          { l: 89, t: 23, d: 2.9 }, { l: 23, t: 90, d: 1.3 }, { l: 56, t: 78, d: 3.6 }, { l: 34, t: 34, d: 0.7 },
-          { l: 67, t: 12, d: 2.2 }, { l: 12, t: 67, d: 1.8 }, { l: 90, t: 45, d: 3.0 }, { l: 45, t: 23, d: 0.6 },
-          { l: 78, t: 56, d: 2.4 }, { l: 23, t: 89, d: 1.0 }, { l: 56, t: 12, d: 3.3 }, { l: 34, t: 67, d: 0.3 },
-          { l: 89, t: 78, d: 2.6 }, { l: 67, t: 34, d: 1.4 },
-        ].map((pos, i) => (
-          <div
-            key={`spec-${i}`}
-            className="absolute w-0.5 h-0.5 rounded-full bg-cyan-400/40 animate-pulse"
-            style={{
-              left: `${pos.l}%`,
-              top: `${pos.t}%`,
-              animationDelay: `${pos.d}s`,
-              animationDuration: `${1.5 + (i % 3) * 0.8}s`,
-            }}
-          />
-        ))}
-        
-        {/* Data bits - static positions */}
-        {[
-          { l: 15, t: 8, d: 0.5 }, { l: 42, t: 25, d: 2.1 }, { l: 73, t: 42, d: 4.2 }, { l: 28, t: 65, d: 1.3 },
-          { l: 85, t: 15, d: 3.8 }, { l: 52, t: 82, d: 0.9 }, { l: 18, t: 55, d: 2.7 }, { l: 63, t: 38, d: 4.5 },
-          { l: 38, t: 72, d: 1.6 }, { l: 78, t: 58, d: 3.2 }, { l: 22, t: 28, d: 0.3 }, { l: 55, t: 92, d: 2.4 },
-        ].map((pos, i) => (
-          <div
-            key={`bit-${i}`}
-            className="absolute font-mono text-[6px] text-cyan-500/30 animate-float-bit"
-            style={{
-              left: `${pos.l}%`,
-              top: `${pos.t}%`,
-              animationDelay: `${pos.d}s`,
-              animationDuration: `${6 + (i % 4)}s`,
-            }}
-          >
-            {['01', '10', '00', '11', '█', '░'][i % 6]}
-          </div>
-        ))}
-      </div>
-
-      {/* Horizontal scan lines */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-px animate-scan-horizontal"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.1) 50%, transparent 100%)',
-              top: `${20 + i * 15}%`,
-              animationDelay: `${i * 0.8}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* CRT scanline overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-50 opacity-[0.025]"
-        style={{
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
-          backgroundSize: '100% 4px',
-        }}
-      />
-
-      {/* Vignette effect */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-40"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%)',
-        }}
-      />
-
-      {/* Corner accents - enhanced */}
-      <div className="absolute top-8 left-8 w-24 h-24 pointer-events-none">
-        <div className="absolute top-0 left-0 w-20 h-[1px] bg-gradient-to-r from-cyan-500/60 to-transparent" />
-        <div className="absolute top-0 left-0 w-[1px] h-20 bg-gradient-to-b from-cyan-500/60 to-transparent" />
-        <div className="absolute top-4 left-4 w-2 h-2 border-l-2 border-t-2 border-cyan-400/40" />
-      </div>
-      <div className="absolute bottom-8 right-8 w-24 h-24 pointer-events-none">
-        <div className="absolute bottom-0 right-0 w-20 h-[1px] bg-gradient-to-l from-emerald-500/40 to-transparent" />
-        <div className="absolute bottom-0 right-0 w-[1px] h-20 bg-gradient-to-t from-emerald-500/40 to-transparent" />
-        <div className="absolute bottom-4 right-4 w-2 h-2 border-r-2 border-b-2 border-emerald-400/30" />
-      </div>
-
-      {/* Top/bottom decorative lines */}
-      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/15 to-transparent" />
-      </div>
-
-      {/* Animated noise grain */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-45 opacity-[0.015] animate-grain"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Main content — vertically centered */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-12">
-        <div className="w-full max-w-2xl">
-
-          {/* Terminal window */}
-          <div className={`relative transition-transform duration-100 ${activeGlitch ? 'translate-x-[1px]' : ''}`}>
-            {/* Window chrome */}
-            <div
-              className="flex items-center justify-between px-4 py-3 rounded-t-lg border border-b-0 backdrop-blur-sm"
-              style={{ 
-                background: 'linear-gradient(180deg, #0a1628 0%, #070f1c 100%)',
-                borderColor: 'rgba(34, 211, 238, 0.15)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <div 
-                    className="w-3 h-3 rounded-full transition-colors duration-200 hover:bg-red-400/80 cursor-pointer"
-                    style={{ background: '#2a2a2a', border: '1px solid #3a3a3a' }}
-                  />
-                  <div 
-                    className="w-3 h-3 rounded-full transition-colors duration-200 hover:bg-amber-400/80 cursor-pointer"
-                    style={{ background: '#2a2a2a', border: '1px solid #3a3a3a' }}
-                  />
-                  <div 
-                    className="w-3 h-3 rounded-full transition-colors duration-200 hover:bg-emerald-400/80 cursor-pointer"
-                    style={{ background: '#2a2a2a', border: '1px solid #3a3a3a' }}
-                  />
-                </div>
-              </div>
-              <span className="font-mono text-[11px] text-slate-500 tracking-widest uppercase">
-                sentinel — bash
-              </span>
-              <div className="w-12" />
+      {/* Main Content */}
+      <main className="relative z-10 flex-1 px-4 sm:px-6 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-6" style={{ borderColor: 'rgba(34, 211, 238, 0.2)', background: 'rgba(34, 211, 238, 0.05)' }}>
+              <span className="text-[10px] font-mono text-cyan-400">Decentralized AI Infrastructure</span>
             </div>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
+              Autonomous AI Agent
+              <br />
+              <span className="text-cyan-400">Procurement Network</span>
+            </h1>
+            <p className="text-slate-400 max-w-xl mx-auto mb-6 text-sm sm:text-base">
+              Sealed-bid marketplace where AI agents procure compute, data, and APIs. 
+              Encrypted bids prevent front-running. x402 payments for instant settlement.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/orderbook" className="px-5 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-sm font-mono rounded border transition-colors" style={{ borderColor: 'rgba(34, 211, 238, 0.3)' }}>
+                Explore Orderbook
+              </Link>
+              <Link href="/agents" className="px-5 py-2.5 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-sm font-mono rounded border border-slate-700 transition-colors">
+                Register Agent
+              </Link>
+            </div>
+          </div>
 
-            {/* Terminal body */}
-            <div
-              className="border rounded-b-lg relative overflow-hidden backdrop-blur-sm"
-              style={{ 
-                background: 'linear-gradient(180deg, #050a14 0%, #03060c 100%)',
-                borderColor: 'rgba(34, 211, 238, 0.15)',
-                boxShadow: `
-                  inset 0 0 80px rgba(34, 211, 238, 0.03),
-                  0 0 60px rgba(0,0,0,0.5),
-                  0 0 100px rgba(34, 211, 238, 0.05)
-                `,
-              }}
-            >
-              {/* Terminal glow */}
-              <div 
-                className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"
-              />
-
-              {/* Boot sequence */}
-              <div className="px-6 pt-6 pb-4">
-                {BOOT_LINES.map((line, i) => (
-                  <BootLine 
-                    key={i} 
-                    text={line.text} 
-                    delay={line.delay} 
-                    color={line.color} 
-                    weight={line.weight}
-                  />
-                ))}
+          {/* Stats Bar */}
+          <div className="flex justify-center gap-8 sm:gap-16 mb-12">
+            {STATS.map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl font-bold text-white font-mono">{stat.value}</div>
+                <div className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">{stat.label}</div>
               </div>
+            ))}
+          </div>
 
-              {/* Navigation — appears after boot */}
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {FEATURES.map((feature, i) => (
               <div
-                className="transition-all duration-700 ease-out overflow-hidden"
-                style={{
-                  maxHeight: bootDone ? '450px' : '0px',
-                  opacity: bootDone ? 1 : 0,
+                key={i}
+                className="border rounded-lg p-4 transition-all duration-300 hover:border-cyan-500/30"
+                style={{ background: 'rgba(5, 10, 20, 0.6)', borderColor: 'rgba(34, 211, 238, 0.1)' }}
+              >
+                <div className="text-2xl mb-2">{feature.icon}</div>
+                <h3 className="text-sm font-mono text-white mb-1">{feature.title}</h3>
+                <p className="text-[10px] font-mono text-slate-500 leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Terminal Section */}
+          <div className="max-w-2xl mx-auto">
+            <div className={`relative transition-transform duration-100 ${activeGlitch ? 'translate-x-0.5' : ''}`}>
+              <div
+                className="flex items-center justify-between px-4 py-2.5 rounded-t-lg border border-b-0"
+                style={{ 
+                  background: 'linear-gradient(180deg, #0a1628 0%, #070f1c 100%)',
+                  borderColor: 'rgba(34, 211, 238, 0.15)',
                 }}
               >
-                {/* Divider */}
-                <div className="mx-6 my-2 relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent h-px" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent h-px mt-px" />
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2a2a2a' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2a2a2a' }} />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2a2a2a' }} />
                 </div>
+                <span className="font-mono text-[10px] text-slate-500 uppercase">sentinel — bash</span>
+                <div className="w-8" />
+              </div>
 
-                {/* Nav links */}
-                <div className="p-6 space-y-2">
-                  {NAV_ITEMS.map((item, index) => (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onMouseEnter={() => setHoveredNav(item.key)}
-                      onMouseLeave={() => setHoveredNav(null)}
-                      className="group block rounded-lg px-4 py-3 transition-all duration-200"
-                      style={{
-                        background: hoveredNav === item.key 
-                          ? 'linear-gradient(90deg, rgba(34, 211, 238, 0.08) 0%, transparent 100%)' 
-                          : 'transparent',
-                        borderLeft: hoveredNav === item.key 
-                          ? '2px solid rgba(34, 211, 238, 0.5)' 
-                          : '2px solid transparent',
-                        transform: pressedKey === String(index + 1) ? 'scale(0.98)' : 'scale(1)',
-                      }}
-                    >
-                      <div className="flex items-center gap-4">
-                        <span 
-                          className={`font-mono text-[11px] shrink-0 transition-colors duration-200 ${
-                            hoveredNav === item.key ? 'text-cyan-400' : 'text-slate-600'
-                          }`}
-                        >
-                          [{item.shortcut}]
-                        </span>
-                        <span className={`font-mono text-[14px] font-semibold transition-colors duration-200 ${
-                          hoveredNav === item.key ? 'text-cyan-300' : 'text-slate-300'
-                        }`}>
-                          {item.label}
-                        </span>
-                        <span
-                          className="transition-all duration-200 font-mono text-[12px]"
-                          style={{
-                            opacity: hoveredNav === item.key ? 1 : 0,
-                            transform: hoveredNav === item.key ? 'translateX(0)' : 'translateX(-6px)',
-                            color: '#22d3ee',
-                          }}
-                        >
-                          {'->'}
-                        </span>
-                      </div>
-                      <p className="font-mono text-[11px] text-slate-500 mt-1 ml-[52px] group-hover:text-slate-400 transition-colors">
-                        {item.desc}
-                      </p>
-                    </Link>
+              <div
+                className="border rounded-b-lg relative overflow-hidden"
+                style={{ 
+                  background: 'linear-gradient(180deg, #050a14 0%, #03060c 100%)',
+                  borderColor: 'rgba(34, 211, 238, 0.15)',
+                }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+
+                <div className="px-5 pt-5 pb-3">
+                  {BOOT_LINES.map((line, i) => (
+                    <BootLine key={i} text={line.text} delay={line.delay} color={line.color} weight={line.weight} />
                   ))}
                 </div>
 
-                {/* Prompt line */}
-                <div className="px-6 pb-6">
-                  <div className="font-mono text-[13px] flex items-center gap-1.5">
-                    <span className="text-cyan-500 font-semibold">sentinel</span>
-                    <span className="text-slate-600">:</span>
-                    <span className="text-slate-500">~</span>
-                    <span className="text-slate-600">$</span>
-                    <span className="inline-block w-[8px] h-[16px] bg-cyan-400/70 ml-1.5 animate-pulse" />
+                <div
+                  className="transition-all duration-700 ease-out overflow-hidden"
+                  style={{
+                    maxHeight: bootDone ? '400px' : '0px',
+                    opacity: bootDone ? 1 : 0,
+                  }}
+                >
+                  <div className="mx-5 my-2 relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent h-px" />
+                  </div>
+
+                  <div className="p-5 space-y-2">
+                    {NAV_ITEMS.map((item, index) => (
+                      <Link
+                        key={item.key}
+                        href={item.href}
+                        onMouseEnter={() => setHoveredNav(item.key)}
+                        onMouseLeave={() => setHoveredNav(null)}
+                        className="group block rounded-lg px-3 py-2.5 transition-all duration-200"
+                        style={{
+                          background: hoveredNav === item.key ? 'linear-gradient(90deg, rgba(34, 211, 238, 0.08) 0%, transparent 100%)' : 'transparent',
+                          borderLeft: hoveredNav === item.key ? '2px solid rgba(34, 211, 238, 0.5)' : '2px solid transparent',
+                          transform: pressedKey === String(index + 1) ? 'scale(0.98)' : 'scale(1)',
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`font-mono text-[10px] ${hoveredNav === item.key ? 'text-cyan-400' : 'text-slate-600'}`}>
+                            [{item.shortcut}]
+                          </span>
+                          <span className={`font-mono text-[13px] ${hoveredNav === item.key ? 'text-cyan-300' : 'text-slate-300'}`}>
+                            {item.label}
+                          </span>
+                          <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                            →
+                          </span>
+                        </div>
+                        <p className="font-mono text-[10px] text-slate-500 mt-0.5 ml-[38px]">
+                          {item.desc}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="px-5 pb-5">
+                    <div className="font-mono text-[12px] flex items-center gap-1.5">
+                      <span className="text-cyan-500">sentinel</span>
+                      <span className="text-slate-600">:</span>
+                      <span className="text-slate-500">~</span>
+                      <span className="text-slate-600">$</span>
+                      <span className="inline-block w-[7px] h-[14px] bg-cyan-400/70 ml-1 animate-pulse" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Metadata bar */}
-          <div
-            className="flex items-center justify-between mt-5 px-2 transition-all duration-700 ease-out"
-            style={{ opacity: bootDone ? 1 : 0, transform: bootDone ? 'translateY(0)' : 'translateY(10px)' }}
-          >
-            <div className="flex items-center gap-2 font-mono text-[10px] text-slate-600">
-              <span className="hover:text-cyan-400 transition-colors cursor-default">SKALE</span>
-              <span className="text-slate-700">/</span>
-              <span className="hover:text-cyan-400 transition-colors cursor-default">BITE</span>
-              <span className="text-slate-700">/</span>
-              <span className="hover:text-cyan-400 transition-colors cursor-default">x402</span>
-              <span className="text-slate-700">/</span>
-              <span className="hover:text-cyan-400 transition-colors cursor-default">ERC-8004</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
-              <span className="font-mono text-[10px] text-slate-500">
-                all systems operational
+            {/* Keyboard hint */}
+            <div className="text-center mt-4">
+              <span className="font-mono text-[9px] text-slate-600">
+                press [1], [2], or [3] to navigate
               </span>
             </div>
           </div>
 
-          {/* Keyboard hint */}
-          <div
-            className="mt-4 text-center transition-all duration-700 delay-300"
-            style={{ opacity: bootDone ? 0.5 : 0 }}
-          >
-            <span className="font-mono text-[9px] text-slate-600">
-              press [1], [2], or [3] to navigate
-            </span>
+          {/* How it Works */}
+          <div className="mt-16 text-center">
+            <h2 className="text-sm font-mono text-slate-500 uppercase tracking-wider mb-8">How It Works</h2>
+            <div className="flex flex-wrap justify-center items-start gap-4 sm:gap-8">
+              {[
+                { step: '01', title: 'Providers List', desc: 'Register services with SLA terms' },
+                { step: '02', title: 'Agents Bid', desc: 'Submit encrypted sealed bids' },
+                { step: '03', title: 'Auction Clear', desc: 'Bids revealed & winners selected' },
+                { step: '04', title: 'Instant Pay', desc: 'x402 payments settle immediately' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="text-center">
+                    <div className="font-mono text-lg text-cyan-400 font-bold">{item.step}</div>
+                    <div className="text-xs font-mono text-white mt-1">{item.title}</div>
+                    <div className="text-[10px] font-mono text-slate-600">{item.desc}</div>
+                  </div>
+                  {i < 3 && <span className="text-slate-700 text-xl hidden sm:inline">→</span>}
+                </div>
+              ))}
+            </div>
           </div>
+
+          {/* Footer */}
+          <footer className="mt-16 pt-8 border-t border-slate-800/50">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2 font-mono text-[10px] text-slate-600">
+                <span>SKALE</span>
+                <span className="text-slate-800">/</span>
+                <span>BITE</span>
+                <span className="text-slate-800">/</span>
+                <span>x402</span>
+                <span className="text-slate-800">/</span>
+                <span>ERC-8004</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
+                <span className="font-mono text-[10px] text-slate-500">all systems operational</span>
+              </div>
+            </div>
+          </footer>
         </div>
-      </div>
+      </main>
     </div>
+  );
+}
+
+function BackgroundEffects() {
+  return (
+    <>
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: `radial-gradient(ellipse 80% 50% at 50% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)`,
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: `linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px)`,
+        backgroundSize: '50px 50px',
+      }} />
+      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.2), transparent)',
+      }} />
+      <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent)',
+      }} />
+    </>
   );
 }
